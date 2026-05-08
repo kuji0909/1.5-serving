@@ -1,0 +1,1467 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>1.5인분 — 우리 동네 식재료 나눔</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ═══════════════════════════════════════
+       RESET & TOKENS
+    ═══════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green-deep:   #2d4a3e;
+      --green-main:   #4a6741;
+      --green-mid:    #6b8f5e;
+      --green-light:  #8a9e85;
+      --green-pale:   #e8f4ea;
+      --gold:         #c8a96e;
+      --gold-light:   #f5e9d4;
+      --bg:           #ffffff;
+      --bg-sub:       #f7f7f7;
+      --bg-card:      #ffffff;
+      --text-dark:    #1a1a1a;
+      --text-mid:     #4a4a4a;
+      --text-muted:   #999999;
+      --border:       #ebebeb;
+      --shadow-sm:    0 2px 8px rgba(0,0,0,.06);
+      --shadow-md:    0 4px 20px rgba(0,0,0,.09);
+      --shadow-lg:    0 8px 32px rgba(0,0,0,.12);
+      --radius-sm:    10px;
+      --radius-md:    16px;
+      --radius-lg:    24px;
+      --radius-full:  999px;
+      --font:         'Noto Sans KR', sans-serif;
+      --safe-bottom:  env(safe-area-inset-bottom, 0px);
+    }
+
+    html { font-family: var(--font); background: var(--bg); color: var(--text-dark); }
+    body { max-width: 430px; margin: 0 auto; min-height: 100dvh; position: relative; overflow-x: hidden; background: var(--bg); }
+    @media (min-width: 430px) { html { background: #e8e8e8; } }
+
+    /* ═══════════════════════════════════════
+       ONBOARDING LAYER
+    ═══════════════════════════════════════ */
+    #onboarding {
+      position: fixed; inset: 0; z-index: 900;
+      background: #fff;
+      max-width: 430px; margin: 0 auto;
+      overflow: hidden;
+    }
+
+    /* Individual onboarding screens */
+    .ob-screen {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      opacity: 0; pointer-events: none;
+      transition: opacity .35s ease, transform .35s ease;
+      transform: translateX(30px);
+    }
+    .ob-screen.active {
+      opacity: 1; pointer-events: all; transform: translateX(0);
+    }
+    .ob-screen.exit {
+      opacity: 0; transform: translateX(-30px);
+    }
+
+    /* ── Splash ── */
+    #ob-splash {
+      background: linear-gradient(160deg, var(--green-deep) 0%, var(--green-main) 60%, #6b8f5e 100%);
+      align-items: center; justify-content: center; gap: 0;
+    }
+    .splash-logo-wrap { text-align: center; animation: splashIn .8s ease both; }
+    @keyframes splashIn { from { opacity:0; transform:scale(.8) translateY(20px); } to { opacity:1; transform:scale(1) translateY(0); } }
+    .splash-icon { font-size: 72px; margin-bottom: 16px; display: block; }
+    .splash-title {
+      font-size: 42px; font-weight: 900; color: #fff;
+      letter-spacing: -1.5px; line-height: 1;
+    }
+    .splash-title span { color: var(--gold); }
+    .splash-sub { font-size: 16px; color: rgba(255,255,255,.75); margin-top: 10px; font-weight: 400; }
+    .splash-dots { display: flex; gap: 8px; margin-top: 60px; }
+    .splash-dots span {
+      width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,.35);
+      animation: dotBounce 1.2s infinite;
+    }
+    .splash-dots span:nth-child(2) { animation-delay: .15s; }
+    .splash-dots span:nth-child(3) { animation-delay: .3s; }
+    @keyframes dotBounce { 0%,80%,100%{transform:scale(.7);background:rgba(255,255,255,.35)} 40%{transform:scale(1);background:rgba(255,255,255,.9)} }
+
+    /* ── Login ── */
+    #ob-login { justify-content: flex-end; }
+    .ob-login-bg {
+      position: absolute; inset: 0;
+      background: linear-gradient(160deg, var(--green-deep) 0%, var(--green-main) 55%, #8ab87a 100%);
+    }
+    .ob-login-illust {
+      position: absolute; top: 60px; left: 0; right: 0;
+      text-align: center; font-size: 90px; line-height: 1;
+      animation: floatIllust 3s ease-in-out infinite;
+    }
+    @keyframes floatIllust { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+    .ob-login-sheet {
+      position: relative; background: #fff;
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      padding: 32px 28px calc(40px + var(--safe-bottom));
+    }
+    .ob-login-tag {
+      display: inline-block; background: var(--green-pale); color: var(--green-deep);
+      border-radius: var(--radius-full); padding: 5px 12px; font-size: 12px; font-weight: 700;
+      margin-bottom: 14px;
+    }
+    .ob-login-title { font-size: 24px; font-weight: 900; color: var(--text-dark); line-height: 1.3; margin-bottom: 6px; }
+    .ob-login-desc  { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 28px; }
+    .ob-social-btn {
+      width: 100%; padding: 15px 20px; border-radius: var(--radius-full);
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      font-size: 15px; font-weight: 700; cursor: pointer; font-family: var(--font);
+      border: none; margin-bottom: 12px; transition: opacity .15s;
+    }
+    .ob-social-btn:active { opacity: .85; }
+    .btn-kakao { background: #FEE500; color: #3C1E1E; }
+    .btn-apple  { background: #1a1a1a; color: #fff; }
+    .btn-kakao .btn-icon, .btn-apple .btn-icon { font-size: 20px; }
+    .ob-skip { text-align: center; margin-top: 6px; }
+    .ob-skip button {
+      background: none; border: none; font-family: var(--font);
+      font-size: 13px; color: var(--text-muted); cursor: pointer; padding: 8px;
+      text-decoration: underline;
+    }
+
+    /* ── Location ── */
+    #ob-location { background: #fff; }
+    .ob-top-bar {
+      display: flex; align-items: center; padding: 56px 24px 0;
+      gap: 8px;
+    }
+    .ob-back {
+      width: 36px; height: 36px; border-radius: 50%; border: 1.5px solid var(--border);
+      background: none; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center;
+    }
+    .ob-progress {
+      flex: 1; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden;
+    }
+    .ob-progress-fill { height: 100%; background: var(--green-main); border-radius: 2px; transition: width .4s ease; }
+
+    .ob-body { flex: 1; padding: 32px 28px; display: flex; flex-direction: column; }
+    .ob-step-label { font-size: 12px; font-weight: 700; color: var(--green-main); letter-spacing: .5px; margin-bottom: 8px; }
+    .ob-title { font-size: 22px; font-weight: 900; color: var(--text-dark); line-height: 1.35; margin-bottom: 8px; }
+    .ob-desc  { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 32px; }
+
+    .location-box {
+      border: 2px dashed var(--border); border-radius: var(--radius-md);
+      padding: 24px; text-align: center; cursor: pointer;
+      transition: border-color .2s, background .2s;
+      margin-bottom: 16px;
+    }
+    .location-box:hover { border-color: var(--green-main); background: var(--green-pale); }
+    .location-box.set   { border-style: solid; border-color: var(--green-main); background: var(--green-pale); }
+    .location-box .loc-emoji { font-size: 36px; margin-bottom: 10px; display: block; }
+    .location-box .loc-cta { font-size: 15px; font-weight: 700; color: var(--green-main); }
+    .location-box .loc-hint { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+    .location-or { text-align: center; font-size: 13px; color: var(--text-muted); margin-bottom: 16px; }
+    .location-manual {
+      width: 100%; padding: 14px 18px; border-radius: var(--radius-full);
+      border: 1.5px solid var(--border); background: var(--bg-sub);
+      font-family: var(--font); font-size: 14px; color: var(--text-dark); outline: none;
+    }
+    .location-manual:focus { border-color: var(--green-main); }
+
+    /* ── Radius ── */
+    #ob-radius { background: #fff; }
+    .radius-preview {
+      margin: 20px 0; position: relative;
+      height: 180px; background: var(--bg-sub); border-radius: var(--radius-md); overflow: hidden;
+    }
+    /* Simple CSS map */
+    .mini-map {
+      position: absolute; inset: 0;
+      background: #f0f4f0;
+    }
+    .mini-map-road {
+      position: absolute; background: #fff;
+    }
+    .mini-map-road.h { height: 10px; left: 0; right: 0; }
+    .mini-map-road.v { width: 10px; top: 0; bottom: 0; }
+    .mini-map-block {
+      position: absolute; background: #dde8da; border-radius: 4px;
+    }
+    .map-center-dot {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      width: 14px; height: 14px; border-radius: 50%;
+      background: var(--green-main); border: 3px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,.2);
+      z-index: 3;
+    }
+    .map-radius-circle {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      border-radius: 50%; border: 2px solid var(--green-main);
+      background: rgba(74,103,65,.1);
+      transition: width .4s ease, height .4s ease;
+      z-index: 2;
+    }
+    .map-pin {
+      position: absolute; z-index: 3; font-size: 22px;
+      transform: translate(-50%, -100%);
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,.2));
+    }
+    .map-pin-label {
+      position: absolute; z-index: 4; transform: translate(-50%, 4px);
+      background: #fff; border-radius: var(--radius-full); padding: 2px 7px;
+      font-size: 10px; font-weight: 700; color: var(--text-dark);
+      box-shadow: var(--shadow-sm); white-space: nowrap;
+    }
+    .radius-options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+    .radius-opt {
+      display: flex; align-items: center; gap: 14px;
+      border: 2px solid var(--border); border-radius: var(--radius-md);
+      padding: 14px 18px; cursor: pointer; transition: all .15s;
+    }
+    .radius-opt.selected { border-color: var(--green-main); background: var(--green-pale); }
+    .radius-opt .ro-icon { font-size: 24px; }
+    .radius-opt .ro-info { flex: 1; }
+    .radius-opt .ro-name { font-size: 15px; font-weight: 700; color: var(--text-dark); }
+    .radius-opt .ro-desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .radius-opt .ro-count {
+      font-size: 13px; font-weight: 700; color: var(--green-main);
+      background: var(--green-pale); border-radius: var(--radius-full);
+      padding: 3px 10px;
+    }
+
+    /* ── Trust guide ── */
+    #ob-trust { background: #fff; }
+    .trust-carousel { flex: 1; overflow: hidden; position: relative; }
+    .trust-slides {
+      display: flex; height: 100%;
+      transition: transform .35s ease;
+    }
+    .trust-slide {
+      min-width: 100%; padding: 0 28px;
+      display: flex; flex-direction: column; align-items: center;
+      text-align: center; justify-content: center; gap: 14px;
+    }
+    .trust-slide-icon { font-size: 64px; }
+    .trust-slide-badge {
+      padding: 6px 16px; border-radius: var(--radius-full);
+      font-size: 13px; font-weight: 700;
+    }
+    .badge-unopened { background: #e3f4ff; color: #1a7dc0; }
+    .badge-fresh    { background: #e8f4ea; color: #2e7d32; }
+    .badge-sealed   { background: #fff3e0; color: #b06000; }
+    .trust-slide-title { font-size: 20px; font-weight: 900; color: var(--text-dark); }
+    .trust-slide-desc  { font-size: 14px; color: var(--text-muted); line-height: 1.65; }
+    .carousel-dots { display: flex; gap: 6px; justify-content: center; padding: 12px 0; }
+    .carousel-dots span {
+      width: 7px; height: 7px; border-radius: 50%; background: var(--border); transition: background .2s;
+    }
+    .carousel-dots span.active { background: var(--green-main); width: 20px; border-radius: 4px; }
+
+    /* OB bottom CTA */
+    .ob-cta-wrap { padding: 16px 28px calc(28px + var(--safe-bottom)); }
+    .ob-cta {
+      width: 100%; padding: 16px; border-radius: var(--radius-full);
+      background: var(--green-main); color: #fff; font-size: 16px; font-weight: 700;
+      border: none; cursor: pointer; font-family: var(--font); transition: background .15s;
+    }
+    .ob-cta:hover { background: var(--green-deep); }
+    .ob-cta:active { transform: scale(.98); }
+
+    /* ═══════════════════════════════════════
+       MAIN APP
+    ═══════════════════════════════════════ */
+    #app { display: none; }
+    #app.visible { display: block; }
+
+    /* ── HEADER ── */
+    .header {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 20px 12px;
+    }
+    .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .logo { display: flex; align-items: center; gap: 8px; }
+    .logo-icon {
+      width: 34px; height: 34px; border-radius: 10px;
+      background: var(--green-main);
+      display: flex; align-items: center; justify-content: center; font-size: 18px;
+    }
+    .logo-text { font-size: 20px; font-weight: 900; color: var(--green-deep); letter-spacing: -0.5px; }
+    .logo-text span { color: var(--gold); }
+    .header-actions { display: flex; gap: 6px; }
+    .icon-btn {
+      width: 38px; height: 38px; border: none; background: none; cursor: pointer;
+      border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center;
+      font-size: 20px; transition: background .15s; position: relative;
+    }
+    .icon-btn:hover { background: var(--bg-sub); }
+    .notif-badge {
+      position: absolute; top: 5px; right: 5px;
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #e84040; border: 1.5px solid #fff;
+    }
+    .location-row { display: flex; align-items: center; justify-content: space-between; }
+    .location-btn {
+      display: flex; align-items: center; gap: 5px; background: none; border: none;
+      cursor: pointer; font-family: var(--font); padding: 0;
+    }
+    .location-btn .loc-pin { font-size: 16px; }
+    .location-btn .loc-name { font-size: 15px; font-weight: 700; color: var(--text-dark); }
+    .location-btn .loc-arrow { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+    .radius-pills { display: flex; gap: 6px; }
+    .pill {
+      padding: 5px 12px; border-radius: var(--radius-full); font-size: 12px;
+      font-weight: 500; border: 1.5px solid var(--border); background: var(--bg);
+      color: var(--text-mid); cursor: pointer; font-family: var(--font); transition: all .15s;
+    }
+    .pill.active { background: var(--green-main); border-color: var(--green-main); color: #fff; font-weight: 700; }
+
+    /* ── VIEW TOGGLE (home vs map) ── */
+    #homeView, #mapView { display: none; }
+    #homeView.active, #mapView.active { display: block; }
+
+    /* ── SEARCH ── */
+    .search-wrap { padding: 12px 20px 0; }
+    .search-box {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--bg-sub); border: 1.5px solid var(--border);
+      border-radius: var(--radius-full); padding: 10px 16px;
+    }
+    .search-box input {
+      flex: 1; border: none; background: none; font-family: var(--font);
+      font-size: 14px; color: var(--text-dark); outline: none;
+    }
+    .search-box input::placeholder { color: var(--text-muted); }
+    .search-icon { font-size: 16px; color: var(--text-muted); }
+    .filter-btn {
+      background: none; border: none; cursor: pointer; font-size: 14px;
+      color: var(--green-main); font-family: var(--font); padding: 0; font-weight: 600;
+    }
+
+    /* ── STATS BANNER ── */
+    .stats-banner {
+      margin: 14px 20px 0;
+      background: linear-gradient(135deg, var(--green-deep) 0%, var(--green-main) 100%);
+      border-radius: var(--radius-md); padding: 14px 18px;
+      display: flex; align-items: center; justify-content: space-between;
+      box-shadow: var(--shadow-md);
+    }
+    .stats-left { display: flex; flex-direction: column; gap: 2px; }
+    .stats-label { font-size: 11px; color: rgba(255,255,255,.7); }
+    .stats-value { font-size: 20px; font-weight: 900; color: #fff; letter-spacing: -0.5px; }
+    .stats-value span { font-size: 13px; font-weight: 500; color: rgba(255,255,255,.8); }
+    .stats-right { display: flex; gap: 16px; }
+    .stat-item { text-align: center; }
+    .stat-num { font-size: 18px; font-weight: 700; color: #fff; display: block; }
+    .stat-desc { font-size: 10px; color: rgba(255,255,255,.65); margin-top: 1px; }
+
+    /* ── SECTION HEADER ── */
+    .section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 20px; margin-top: 20px; margin-bottom: 12px;
+    }
+    .section-title { font-size: 16px; font-weight: 700; }
+    .see-all { font-size: 13px; color: var(--green-main); font-weight: 500; background: none; border: none; cursor: pointer; font-family: var(--font); }
+
+    /* ── URGENT SCROLL ── */
+    .urgent-scroll { overflow-x: auto; scrollbar-width: none; padding: 0 20px; }
+    .urgent-scroll::-webkit-scrollbar { display: none; }
+    .urgent-list { display: flex; gap: 12px; width: max-content; padding-bottom: 4px; }
+    .urgent-card {
+      width: 130px; background: var(--bg-card); border-radius: var(--radius-md);
+      border: 1px solid var(--border); overflow: hidden; cursor: pointer;
+      box-shadow: var(--shadow-sm); transition: transform .15s; flex-shrink: 0;
+    }
+    .urgent-card:active { transform: scale(.97); }
+    .urgent-card-img {
+      height: 80px; background: var(--green-pale);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 34px; position: relative;
+    }
+    .urgent-ribbon {
+      position: absolute; top: 6px; right: 6px;
+      background: #e84040; color: #fff; font-size: 9px; font-weight: 700;
+      padding: 2px 6px; border-radius: var(--radius-full);
+    }
+    .urgent-card-body { padding: 9px 10px; }
+    .urgent-name { font-size: 13px; font-weight: 700; color: var(--text-dark); }
+    .urgent-sub  { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+    /* ── CATEGORY ── */
+    .cat-scroll { overflow-x: auto; padding: 0 20px; scrollbar-width: none; }
+    .cat-scroll::-webkit-scrollbar { display: none; }
+    .cat-list { display: flex; gap: 10px; width: max-content; padding-bottom: 2px; }
+    .cat-chip {
+      display: flex; align-items: center; gap: 6px;
+      padding: 8px 14px; border-radius: var(--radius-full);
+      background: var(--bg-sub); border: 1.5px solid var(--border);
+      font-size: 13px; font-weight: 500; color: var(--text-mid);
+      cursor: pointer; transition: all .15s; white-space: nowrap; font-family: var(--font);
+    }
+    .cat-chip.active { background: var(--green-pale); border-color: var(--green-main); color: var(--green-deep); font-weight: 700; }
+    .cat-emoji { font-size: 15px; }
+
+    /* ── SORT ROW ── */
+    .sort-row { display: flex; align-items: center; gap: 8px; padding: 0 20px; margin-bottom: 10px; }
+    .sort-chip {
+      padding: 5px 12px; border-radius: var(--radius-full); font-size: 12px;
+      font-weight: 500; border: 1.5px solid var(--border); background: var(--bg);
+      color: var(--text-mid); cursor: pointer; font-family: var(--font); transition: all .15s;
+    }
+    .sort-chip.active { border-color: var(--green-main); color: var(--green-main); font-weight: 700; }
+    .sort-divider { width: 1px; height: 14px; background: var(--border); }
+    .live-dot { display: flex; align-items: center; gap: 5px; margin-left: auto; font-size: 12px; color: var(--text-muted); }
+    .dot-pulse { width: 7px; height: 7px; border-radius: 50%; background: #3dbb5a; animation: pulse 1.6s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.75)} }
+
+    /* ── FEED CARDS ── */
+    .feed { padding: 0 20px; display: flex; flex-direction: column; gap: 12px; }
+    .card {
+      background: var(--bg-card); border-radius: var(--radius-md);
+      border: 1px solid var(--border); box-shadow: var(--shadow-sm);
+      overflow: hidden; cursor: pointer; transition: transform .15s; display: flex;
+    }
+    .card:active { transform: scale(.98); }
+    .card-img {
+      width: 100px; flex-shrink: 0; position: relative; overflow: hidden;
+    }
+    .card-img-bg { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 40px; }
+    .trust-badge {
+      position: absolute; top: 7px; left: 7px;
+      padding: 3px 7px; border-radius: var(--radius-full);
+      font-size: 10px; font-weight: 700; display: flex; align-items: center; gap: 3px;
+    }
+    .trust-badge.unopened { background: #e3f4ff; color: #1a7dc0; }
+    .trust-badge.fresh    { background: #e8f4ea; color: #2e7d32; }
+    .trust-badge.sealed   { background: #fff3e0; color: #b06000; }
+    .card-body { flex: 1; padding: 13px 14px; display: flex; flex-direction: column; gap: 4px; }
+    .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+    .card-title { font-size: 15px; font-weight: 700; line-height: 1.3; }
+    .card-free {
+      flex-shrink: 0; background: var(--gold-light); color: var(--gold);
+      border-radius: var(--radius-full); padding: 2px 8px; font-size: 11px; font-weight: 700;
+      border: 1px solid var(--gold); margin-top: 1px;
+    }
+    .card-desc { font-size: 13px; color: var(--text-muted); line-height: 1.4;
+      overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; }
+    .card-meta { display: flex; align-items: center; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
+    .meta-item { display: flex; align-items: center; gap: 3px; font-size: 12px; color: var(--text-muted); }
+    .card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; }
+    .poster-info { display: flex; align-items: center; gap: 6px; }
+    .avatar {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--green-pale); display: flex; align-items: center; justify-content: center;
+      font-size: 13px; border: 1px solid var(--border);
+    }
+    .poster-name { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+    .pick-btn {
+      background: var(--green-main); color: #fff; border: none; border-radius: var(--radius-full);
+      padding: 6px 14px; font-size: 12px; font-weight: 700; cursor: pointer;
+      font-family: var(--font); transition: background .15s;
+    }
+    .pick-btn:hover { background: var(--green-deep); }
+    .pick-btn.claimed { background: var(--border); color: var(--text-muted); cursor: not-allowed; }
+    .expiry-bar { height: 3px; background: var(--border); border-radius: 2px; margin-top: 6px; overflow: hidden; }
+    .expiry-fill { height: 100%; border-radius: 2px; }
+    .expiry-fill.urgent { background: #e84040; }
+    .expiry-fill.soon   { background: var(--gold); }
+    .expiry-fill.ok     { background: var(--green-mid); }
+
+    /* ── EMPTY STATE ── */
+    .empty-state { text-align: center; padding: 48px 20px; display: none; }
+    .empty-icon  { font-size: 56px; margin-bottom: 12px; }
+    .empty-title { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+    .empty-desc  { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 20px; }
+    .empty-cta {
+      display: inline-block; background: var(--green-main); color: #fff;
+      border-radius: var(--radius-full); padding: 12px 28px;
+      font-size: 15px; font-weight: 700; border: none; cursor: pointer; font-family: var(--font);
+    }
+
+    /* ══════════════════════════════════════
+       MAP VIEW
+    ══════════════════════════════════════ */
+    #mapView {
+      height: calc(100dvh - 56px - 60px); /* header + nav */
+      position: relative; overflow: hidden;
+    }
+
+    /* Full-screen map canvas (CSS streets) */
+    .map-canvas {
+      position: absolute; inset: 0;
+      background: #eef2ee;
+      overflow: hidden;
+    }
+    /* Street grid */
+    .street { position: absolute; background: #fff; }
+    .street.h { left: 0; right: 0; height: 14px; box-shadow: 0 1px 0 #d8e0d8; }
+    .street.v { top: 0; bottom: 0; width: 14px; box-shadow: 1px 0 0 #d8e0d8; }
+    /* Blocks */
+    .block { position: absolute; border-radius: 6px; }
+    .block.park  { background: #c8dcc8; }
+    .block.bldg  { background: #d4d8d0; }
+    .block.bldg2 { background: #caccca; }
+
+    /* My location pulse */
+    .my-loc {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+    }
+    .my-loc-pulse {
+      width: 60px; height: 60px; border-radius: 50%;
+      background: rgba(74,103,65,.15);
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      animation: locPulse 2s ease-in-out infinite;
+    }
+    @keyframes locPulse { 0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.6} 50%{transform:translate(-50%,-50%) scale(1.5);opacity:0} }
+    .my-loc-dot {
+      width: 18px; height: 18px; border-radius: 50%;
+      background: var(--green-main); border: 3px solid #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,.25);
+      position: relative; z-index: 2;
+    }
+
+    /* Radius ring */
+    .map-ring {
+      position: absolute; top: 50%; left: 50%;
+      border-radius: 50%; border: 2px solid rgba(74,103,65,.4);
+      background: rgba(74,103,65,.07);
+      transform: translate(-50%,-50%);
+      transition: width .5s, height .5s;
+      pointer-events: none; z-index: 5;
+    }
+
+    /* Map pins */
+    .mpin {
+      position: absolute; z-index: 20; cursor: pointer;
+      display: flex; flex-direction: column; align-items: center;
+      transform: translate(-50%, -100%);
+      transition: transform .2s;
+    }
+    .mpin:active { transform: translate(-50%, -100%) scale(.9); }
+    .mpin-bubble {
+      background: #fff; border-radius: var(--radius-full);
+      padding: 6px 10px; font-size: 13px;
+      box-shadow: 0 3px 12px rgba(0,0,0,.18);
+      display: flex; align-items: center; gap: 5px;
+      border: 2px solid var(--green-main);
+      white-space: nowrap;
+    }
+    .mpin-bubble.urgent-pin { border-color: #e84040; }
+    .mpin-emoji { font-size: 16px; }
+    .mpin-label { font-size: 11px; font-weight: 700; color: var(--text-dark); }
+    .mpin-dist  { font-size: 10px; color: var(--text-muted); }
+    .mpin-tail {
+      width: 0; height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 8px solid var(--green-main);
+      margin-top: -1px;
+    }
+    .mpin-tail.urgent-tail { border-top-color: #e84040; }
+
+    /* Map controls */
+    .map-controls {
+      position: absolute; right: 16px; top: 16px; z-index: 30;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .map-ctrl-btn {
+      width: 40px; height: 40px; border-radius: var(--radius-sm);
+      background: #fff; border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; transition: background .15s;
+    }
+    .map-ctrl-btn:hover { background: var(--bg-sub); }
+
+    /* Map radius selector */
+    .map-radius-bar {
+      position: absolute; top: 16px; left: 16px; z-index: 30;
+      background: #fff; border-radius: var(--radius-full);
+      box-shadow: var(--shadow-md); display: flex; overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .map-r-pill {
+      padding: 8px 14px; font-size: 12px; font-weight: 600;
+      cursor: pointer; border: none; background: none; font-family: var(--font);
+      color: var(--text-mid); transition: all .15s;
+    }
+    .map-r-pill.active { background: var(--green-main); color: #fff; font-weight: 700; }
+
+    /* Map pin count badge */
+    .map-count-badge {
+      position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
+      background: var(--text-dark); color: #fff; border-radius: var(--radius-full);
+      padding: 10px 20px; font-size: 13px; font-weight: 700; z-index: 30;
+      box-shadow: var(--shadow-md); white-space: nowrap;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .map-count-badge .count-num { color: #7dde7d; }
+
+    /* Map bottom sheet */
+    .map-sheet {
+      position: absolute; bottom: 0; left: 0; right: 0; z-index: 40;
+      background: #fff; border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      box-shadow: 0 -4px 24px rgba(0,0,0,.12);
+      transform: translateY(100%); transition: transform .3s cubic-bezier(.22,.68,0,1.1);
+      padding: 0 20px 20px;
+    }
+    .map-sheet.open { transform: translateY(0); }
+    .map-sheet-handle {
+      width: 40px; height: 4px; background: var(--border);
+      border-radius: 2px; margin: 14px auto 16px;
+    }
+    .map-sheet-card {
+      display: flex; gap: 14px; align-items: flex-start;
+    }
+    .map-sheet-img {
+      width: 72px; height: 72px; border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px; flex-shrink: 0;
+    }
+    .map-sheet-info { flex: 1; }
+    .map-sheet-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+    .map-sheet-meta  { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; line-height: 1.6; }
+    .map-sheet-btn {
+      width: 100%; padding: 13px; border-radius: var(--radius-full);
+      background: var(--green-main); color: #fff; font-size: 15px; font-weight: 700;
+      border: none; cursor: pointer; font-family: var(--font); margin-top: 14px;
+    }
+    .map-sheet-close {
+      position: absolute; top: 14px; right: 20px;
+      background: var(--bg-sub); border: none; border-radius: 50%;
+      width: 30px; height: 30px; cursor: pointer; font-size: 14px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ══════════════════════════════════════
+       FAB
+    ══════════════════════════════════════ */
+    .fab {
+      position: fixed; bottom: calc(80px + var(--safe-bottom)); right: 20px; z-index: 200;
+      width: 56px; height: 56px; border-radius: 50%;
+      background: var(--green-main); border: none; cursor: pointer;
+      box-shadow: 0 4px 20px rgba(74,103,65,.45);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; color: #fff; transition: transform .2s, box-shadow .2s;
+    }
+    .fab:active { transform: scale(.93); }
+    .fab:hover  { background: var(--green-deep); }
+
+    /* ══════════════════════════════════════
+       BOTTOM NAV
+    ══════════════════════════════════════ */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 430px; z-index: 200;
+      background: var(--bg-card); border-top: 1px solid var(--border);
+      display: flex; padding-bottom: var(--safe-bottom);
+    }
+    .nav-item {
+      flex: 1; display: flex; flex-direction: column; align-items: center;
+      padding: 10px 0 6px; gap: 3px; cursor: pointer; border: none; background: none; font-family: var(--font);
+    }
+    .nav-icon { font-size: 22px; transition: transform .15s; }
+    .nav-label { font-size: 10px; font-weight: 500; color: var(--text-muted); }
+    .nav-item.active .nav-label { color: var(--green-main); font-weight: 700; }
+    .nav-item.active .nav-icon  { transform: scale(1.1); }
+
+    .feed-end { height: calc(96px + var(--safe-bottom)); }
+
+    /* ══════════════════════════════════════
+       SHARE MODAL
+    ══════════════════════════════════════ */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; z-index: 300;
+      background: rgba(0,0,0,.45); backdrop-filter: blur(2px);
+      align-items: flex-end; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-sheet {
+      width: 100%; max-width: 430px;
+      background: var(--bg-card); border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      padding: 20px 24px calc(28px + var(--safe-bottom));
+      animation: slideUp .28s cubic-bezier(.22,.68,0,1.2);
+    }
+    @keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+    .modal-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 20px; }
+    .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+    .modal-sub   { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; }
+    .type-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+    .type-card {
+      border: 2px solid var(--border); border-radius: var(--radius-md);
+      padding: 14px 8px; text-align: center; cursor: pointer; transition: all .15s;
+    }
+    .type-card.selected { border-color: var(--green-main); background: var(--green-pale); }
+    .type-icon { font-size: 28px; margin-bottom: 6px; }
+    .type-name { font-size: 12px; font-weight: 700; }
+    .type-desc { font-size: 10px; color: var(--text-muted); margin-top: 2px; line-height: 1.4; }
+    .modal-btn {
+      width: 100%; padding: 16px; border-radius: var(--radius-full);
+      background: var(--green-main); color: #fff; font-size: 16px; font-weight: 700;
+      border: none; cursor: pointer; font-family: var(--font);
+    }
+    .modal-btn:hover { background: var(--green-deep); }
+
+    /* ══════════════════════════════════════
+       TOAST
+    ══════════════════════════════════════ */
+    .toast {
+      position: fixed; bottom: calc(96px + var(--safe-bottom)); left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #1a1a1a; color: #fff; padding: 11px 20px; border-radius: var(--radius-full);
+      font-size: 14px; font-weight: 500; white-space: nowrap; z-index: 500;
+      opacity: 0; transition: all .28s; pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     ONBOARDING
+══════════════════════════════════════════ -->
+<div id="onboarding">
+
+  <!-- 1. Splash -->
+  <div class="ob-screen active" id="ob-splash">
+    <div class="ob-login-bg" style="background:linear-gradient(160deg,#2d4a3e,#4a6741 60%,#6b8f5e)"></div>
+    <div class="splash-logo-wrap" style="position:relative;z-index:1;">
+      <span class="splash-icon">🥬</span>
+      <div class="splash-title">1<span>.5</span>인분</div>
+      <div class="splash-sub">우리 동네 식재료 나눔</div>
+      <div class="splash-dots" style="justify-content:center;">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Login -->
+  <div class="ob-screen" id="ob-login">
+    <div class="ob-login-bg"></div>
+    <div class="ob-login-illust">🥬🍅🥚</div>
+    <div class="ob-login-sheet">
+      <div class="ob-login-tag">🌿 1인 가구를 위한 나눔</div>
+      <div class="ob-login-title">혼자 다 못 먹겠는<br>식재료, 나눠봐요</div>
+      <div class="ob-login-desc">
+        100m 안 이웃과 무료로 나누고<br>
+        음식 낭비도 줄이고, 생활비도 아끼고
+      </div>
+      <button class="ob-social-btn btn-kakao" onclick="nextOb(2)">
+        <span class="btn-icon">💬</span> 카카오로 시작하기
+      </button>
+      <button class="ob-social-btn btn-apple" onclick="nextOb(2)">
+        <span class="btn-icon">🍎</span> Apple로 시작하기
+      </button>
+      <div class="ob-skip">
+        <button onclick="nextOb(2)">나중에 로그인할게요</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Location -->
+  <div class="ob-screen" id="ob-location">
+    <div class="ob-top-bar">
+      <button class="ob-back" onclick="prevOb(1)">←</button>
+      <div class="ob-progress"><div class="ob-progress-fill" style="width:33%"></div></div>
+    </div>
+    <div class="ob-body">
+      <div class="ob-step-label">STEP 1 / 3</div>
+      <div class="ob-title">내 동네를<br>설정해줘요</div>
+      <div class="ob-desc">100m 안 이웃 나눔만 보여드려요.<br>정확할수록 더 가까운 나눔을 만나요.</div>
+      <div class="location-box" id="locBox" onclick="setLocation()">
+        <span class="loc-emoji">📍</span>
+        <div class="loc-cta">현재 위치 자동 감지</div>
+        <div class="loc-hint">GPS로 정확하게 설정</div>
+      </div>
+      <div class="location-or">또는 직접 입력</div>
+      <input class="location-manual" type="text" placeholder="예) 마포구 망원동" id="manualLoc" oninput="checkManualLoc()" />
+    </div>
+    <div class="ob-cta-wrap">
+      <button class="ob-cta" id="locCta" style="opacity:.4;pointer-events:none" onclick="nextOb(3)">다음으로 →</button>
+    </div>
+  </div>
+
+  <!-- 4. Radius -->
+  <div class="ob-screen" id="ob-radius">
+    <div class="ob-top-bar">
+      <button class="ob-back" onclick="prevOb(2)">←</button>
+      <div class="ob-progress"><div class="ob-progress-fill" style="width:66%"></div></div>
+    </div>
+    <div class="ob-body">
+      <div class="ob-step-label">STEP 2 / 3</div>
+      <div class="ob-title">어디까지<br>걸어갈 수 있어요?</div>
+
+      <!-- Mini map preview -->
+      <div class="radius-preview">
+        <div class="mini-map">
+          <!-- Streets -->
+          <div class="street h" style="top:30%"></div>
+          <div class="street h" style="top:55%"></div>
+          <div class="street h" style="top:78%"></div>
+          <div class="street v" style="left:25%"></div>
+          <div class="street v" style="left:55%"></div>
+          <div class="street v" style="left:78%"></div>
+          <!-- Blocks -->
+          <div class="block park"  style="top:5%;left:5%;width:18%;height:22%"></div>
+          <div class="block bldg"  style="top:5%;left:28%;width:24%;height:22%"></div>
+          <div class="block bldg2" style="top:5%;left:58%;width:18%;height:22%"></div>
+          <div class="block bldg"  style="top:33%;left:5%;width:18%;height:18%"></div>
+          <div class="block bldg2" style="top:33%;left:28%;width:24%;height:18%"></div>
+          <div class="block park"  style="top:33%;left:58%;width:36%;height:18%"></div>
+          <div class="block bldg"  style="top:58%;left:5%;width:18%;height:16%"></div>
+          <div class="block bldg2" style="top:58%;left:28%;width:24%;height:16%"></div>
+          <div class="block bldg"  style="top:58%;left:58%;width:18%;height:16%"></div>
+        </div>
+        <!-- Radius ring -->
+        <div class="map-ring" id="previewRing" style="width:80px;height:80px;"></div>
+        <!-- My location -->
+        <div class="my-loc" style="top:50%;left:50%;transform:translate(-50%,-50%);z-index:10;">
+          <div class="my-loc-dot" style="width:14px;height:14px;border:2.5px solid #fff;"></div>
+        </div>
+        <!-- Pins (shown based on radius) -->
+        <div class="map-pin" style="top:42%;left:60%;">🥦</div>
+        <div class="map-pin" id="pin2" style="top:62%;left:35%;opacity:0;transition:opacity .3s;">🥚</div>
+        <div class="map-pin" id="pin3" style="top:28%;left:44%;opacity:0;transition:opacity .3s;">🍝</div>
+        <div class="map-pin" id="pin4" style="top:55%;left:72%;opacity:0;transition:opacity .3s;">🍞</div>
+      </div>
+
+      <div class="radius-options">
+        <div class="radius-opt selected" id="r100" onclick="selectObRadius(this,'100m',80,'1')">
+          <div class="ro-icon">🏃</div>
+          <div class="ro-info">
+            <div class="ro-name">100m 이내</div>
+            <div class="ro-desc">건물 1~2개 거리 · 1분 이내</div>
+          </div>
+          <div class="ro-count">7개</div>
+        </div>
+        <div class="radius-opt" id="r5min" onclick="selectObRadius(this,'도보5분',130,'2')">
+          <div class="ro-icon">🚶</div>
+          <div class="ro-info">
+            <div class="ro-name">도보 5분</div>
+            <div class="ro-desc">약 350m · 가볍게 산책하며</div>
+          </div>
+          <div class="ro-count">14개</div>
+        </div>
+        <div class="radius-opt" id="r10min" onclick="selectObRadius(this,'도보10분',170,'3')">
+          <div class="ro-icon">🧭</div>
+          <div class="ro-info">
+            <div class="ro-name">도보 10분</div>
+            <div class="ro-desc">약 700m · 더 많은 나눔</div>
+          </div>
+          <div class="ro-count">23개</div>
+        </div>
+      </div>
+    </div>
+    <div class="ob-cta-wrap">
+      <button class="ob-cta" onclick="nextOb(4)">다음으로 →</button>
+    </div>
+  </div>
+
+  <!-- 5. Trust guide -->
+  <div class="ob-screen" id="ob-trust">
+    <div class="ob-top-bar">
+      <button class="ob-back" onclick="prevOb(3)">←</button>
+      <div class="ob-progress"><div class="ob-progress-fill" style="width:100%"></div></div>
+    </div>
+    <div class="ob-body" style="padding-bottom:0;">
+      <div class="ob-step-label">STEP 3 / 3</div>
+      <div class="ob-title">나눔 신뢰도<br>배지 안내</div>
+      <div class="ob-desc">식재료마다 신뢰 등급을 한눈에 확인해요</div>
+    </div>
+
+    <div class="trust-carousel">
+      <div class="trust-slides" id="trustSlides">
+        <div class="trust-slide">
+          <div class="trust-slide-icon">🔒</div>
+          <div class="trust-slide-badge badge-unopened">미개봉</div>
+          <div class="trust-slide-title">공장 밀봉 그대로</div>
+          <div class="trust-slide-desc">
+            제조사 포장이 뜯기지 않은 상태예요.<br>
+            가장 높은 신뢰도의 나눔이에요.
+          </div>
+        </div>
+        <div class="trust-slide">
+          <div class="trust-slide-icon">🥬</div>
+          <div class="trust-slide-badge badge-fresh">신선</div>
+          <div class="trust-slide-title">신선 식재료</div>
+          <div class="trust-slide-desc">
+            채소, 과일 등 신선 식품이에요.<br>
+            유통기한 사진 첨부가 필수예요.
+          </div>
+        </div>
+        <div class="trust-slide">
+          <div class="trust-slide-icon">🥫</div>
+          <div class="trust-slide-badge badge-sealed">밀봉 가공</div>
+          <div class="trust-slide-title">밀봉된 가공식품</div>
+          <div class="trust-slide-desc">
+            소스, 통조림 등 밀봉 보관 식품이에요.<br>
+            직접 밀봉 처리한 경우도 포함돼요.
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="carousel-dots" id="carouselDots">
+      <span class="active"></span><span></span><span></span>
+    </div>
+    <div class="ob-cta-wrap">
+      <button class="ob-cta" id="trustCta" onclick="advanceTrust()">다음 →</button>
+    </div>
+  </div>
+
+</div><!-- /onboarding -->
+
+
+<!-- ══════════════════════════════════════════
+     MAIN APP
+══════════════════════════════════════════ -->
+<div id="app">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-top">
+      <div class="logo">
+        <div class="logo-icon">🥬</div>
+        <div class="logo-text">1<span>.5</span>인분</div>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" onclick="showToast('알림을 준비 중이에요 🔔')">
+          🔔<span class="notif-badge"></span>
+        </button>
+        <button class="icon-btn" onclick="showToast('채팅방을 불러오는 중이에요 💬')">💬</button>
+      </div>
+    </div>
+    <div class="location-row">
+      <button class="location-btn" onclick="showToast('동네 설정은 마이페이지에서 변경할 수 있어요')">
+        <span class="loc-pin">📍</span>
+        <span class="loc-name" id="appLocName">마포구 망원동</span>
+        <span class="loc-arrow">▾</span>
+      </button>
+      <div class="radius-pills">
+        <button class="pill active" onclick="selectRadius(this,'100m')">100m</button>
+        <button class="pill" onclick="selectRadius(this,'도보 5분')">5분</button>
+        <button class="pill" onclick="selectRadius(this,'도보 10분')">10분</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- HOME VIEW -->
+  <div id="homeView" class="active">
+    <!-- Search -->
+    <div class="search-wrap">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="식재료 이름으로 검색해보세요" />
+        <button class="filter-btn" onclick="showToast('필터 기능은 준비 중이에요')">필터 ⚙️</button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-banner">
+      <div class="stats-left">
+        <span class="stats-label" id="statsLabel">내 반경 100m 안에</span>
+        <div class="stats-value" id="statsValue">7개 <span>나눔 중</span></div>
+      </div>
+      <div class="stats-right">
+        <div class="stat-item">
+          <span class="stat-num">23</span>
+          <div class="stat-desc">오늘의<br>나눔</div>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">142</span>
+          <div class="stat-desc">이웃<br>수</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Urgent -->
+    <div class="section-header" style="margin-top:18px;">
+      <div class="section-title">⏰ 오늘 마감 임박</div>
+      <button class="see-all" onclick="showToast('전체보기')">전체보기</button>
+    </div>
+    <div class="urgent-scroll">
+      <div class="urgent-list">
+        <div class="urgent-card" onclick="openPickup('오이 3개')">
+          <div class="urgent-card-img">🥒<span class="urgent-ribbon">D-오늘</span></div>
+          <div class="urgent-card-body"><div class="urgent-name">오이 3개</div><div class="urgent-sub">51m · 무료</div></div>
+        </div>
+        <div class="urgent-card" onclick="openPickup('식빵 반쪽')">
+          <div class="urgent-card-img" style="background:#fff8e1;">🍞<span class="urgent-ribbon">D-오늘</span></div>
+          <div class="urgent-card-body"><div class="urgent-name">식빵 반쪽</div><div class="urgent-sub">38m · 무료</div></div>
+        </div>
+        <div class="urgent-card" onclick="openPickup('두부 1/2모')">
+          <div class="urgent-card-img" style="background:#f3e5f5;">🫙<span class="urgent-ribbon">D-오늘</span></div>
+          <div class="urgent-card-body"><div class="urgent-name">두부 1/2모</div><div class="urgent-sub">72m · 무료</div></div>
+        </div>
+        <div class="urgent-card" onclick="openPickup('방울토마토')">
+          <div class="urgent-card-img" style="background:#fce4ec;">🍅<span class="urgent-ribbon">D-내일</span></div>
+          <div class="urgent-card-body"><div class="urgent-name">방울토마토</div><div class="urgent-sub">88m · 무료</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category -->
+    <div class="section-header"><div class="section-title">🌿 지금 나눔 중</div></div>
+    <div class="cat-scroll">
+      <div class="cat-list">
+        <button class="cat-chip active" onclick="filterCat(this,'all')"><span class="cat-emoji">🍽️</span> 전체</button>
+        <button class="cat-chip" onclick="filterCat(this,'veg')"><span class="cat-emoji">🥬</span> 채소·과일</button>
+        <button class="cat-chip" onclick="filterCat(this,'grain')"><span class="cat-emoji">🍚</span> 쌀·곡물</button>
+        <button class="cat-chip" onclick="filterCat(this,'dairy')"><span class="cat-emoji">🥚</span> 유제품·계란</button>
+        <button class="cat-chip" onclick="filterCat(this,'snack')"><span class="cat-emoji">🍫</span> 간식·음료</button>
+        <button class="cat-chip" onclick="filterCat(this,'sauce')"><span class="cat-emoji">🫙</span> 소스·조미료</button>
+      </div>
+    </div>
+
+    <!-- Sort -->
+    <div class="sort-row" style="margin-top:12px;">
+      <button class="sort-chip active" onclick="selectSort(this)">거리순</button>
+      <div class="sort-divider"></div>
+      <button class="sort-chip" onclick="selectSort(this)">최신순</button>
+      <div class="sort-divider"></div>
+      <button class="sort-chip" onclick="selectSort(this)">마감임박</button>
+      <div class="live-dot"><div class="dot-pulse"></div>실시간</div>
+    </div>
+
+    <!-- Feed -->
+    <div class="feed" id="feed">
+      <div class="card" onclick="openPickup('애호박 1개')">
+        <div class="card-img"><div class="card-img-bg" style="background:#e8f5e9;">🥦</div><div class="trust-badge fresh">🥬 신선</div></div>
+        <div class="card-body">
+          <div class="card-top"><div class="card-title">애호박 1개</div><div class="card-free">무료</div></div>
+          <div class="card-desc">마트에서 2개 묶음으로 샀는데 혼자 다 못 먹겠어요</div>
+          <div class="card-meta">
+            <div class="meta-item">📍 52m</div>
+            <div class="meta-item">🚪 현관 앞</div>
+            <div class="meta-item">🕐 5분 전</div>
+          </div>
+          <div class="expiry-bar"><div class="expiry-fill soon" style="width:45%"></div></div>
+          <div class="card-footer">
+            <div class="poster-info"><div class="avatar">🙂</div><div class="poster-name">지수님</div></div>
+            <button class="pick-btn" onclick="event.stopPropagation();openPickup('애호박 1개')">가져갈게요</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" onclick="openPickup('파스타면 200g')">
+        <div class="card-img"><div class="card-img-bg" style="background:#fff8e1;">🍝</div><div class="trust-badge unopened">🔒 미개봉</div></div>
+        <div class="card-body">
+          <div class="card-top"><div class="card-title">파스타면 200g</div><div class="card-free">무료</div></div>
+          <div class="card-desc">500g 사서 300g만 썼어요. 미개봉 소분이라 믿고 가져가세요</div>
+          <div class="card-meta">
+            <div class="meta-item">📍 80m</div>
+            <div class="meta-item">🚪 1층 택배함</div>
+            <div class="meta-item">🕐 23분 전</div>
+          </div>
+          <div class="expiry-bar"><div class="expiry-fill ok" style="width:85%"></div></div>
+          <div class="card-footer">
+            <div class="poster-info"><div class="avatar">😊</div><div class="poster-name">재현님</div></div>
+            <button class="pick-btn" onclick="event.stopPropagation();openPickup('파스타면 200g')">가져갈게요</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" onclick="openPickup('계란 4개')">
+        <div class="card-img"><div class="card-img-bg" style="background:#fffde7;">🥚</div><div class="trust-badge fresh">🥬 신선</div></div>
+        <div class="card-body">
+          <div class="card-top"><div class="card-title">계란 4개</div><div class="card-free">무료</div></div>
+          <div class="card-desc">30구 사서 남았어요. 유통기한 이틀 남았는데 혼자 못 먹겠어요</div>
+          <div class="card-meta">
+            <div class="meta-item">📍 95m</div>
+            <div class="meta-item">🚪 건물 입구</div>
+            <div class="meta-item">🕐 1시간 전</div>
+          </div>
+          <div class="expiry-bar"><div class="expiry-fill urgent" style="width:15%"></div></div>
+          <div class="card-footer">
+            <div class="poster-info"><div class="avatar">😄</div><div class="poster-name">민정님</div></div>
+            <button class="pick-btn" onclick="event.stopPropagation();openPickup('계란 4개')">가져갈게요</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" onclick="openPickup('떡볶이 소스')">
+        <div class="card-img"><div class="card-img-bg" style="background:#fce4ec;">🌶️</div><div class="trust-badge sealed">🥫 밀봉</div></div>
+        <div class="card-body">
+          <div class="card-top"><div class="card-title">떡볶이 소스 반팩</div><div class="card-free">무료</div></div>
+          <div class="card-desc">밀키트 사서 소스가 너무 남았어요. 밀봉해서 냉장 보관 중</div>
+          <div class="card-meta">
+            <div class="meta-item">📍 63m</div>
+            <div class="meta-item">🚪 현관 앞</div>
+            <div class="meta-item">🕐 2시간 전</div>
+          </div>
+          <div class="expiry-bar"><div class="expiry-fill soon" style="width:55%"></div></div>
+          <div class="card-footer">
+            <div class="poster-info"><div class="avatar">😁</div><div class="poster-name">수현님</div></div>
+            <button class="pick-btn" onclick="event.stopPropagation();openPickup('떡볶이 소스')">가져갈게요</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="opacity:.6;" onclick="showToast('이미 완료된 나눔이에요')">
+        <div class="card-img"><div class="card-img-bg" style="background:#f3e5f5;">🧅</div><div class="trust-badge fresh">🥬 신선</div></div>
+        <div class="card-body">
+          <div class="card-top"><div class="card-title">양파 2개</div><div class="card-free">무료</div></div>
+          <div class="card-desc">어제 한 봉지 샀는데 요리 안 할 것 같아서요</div>
+          <div class="card-meta">
+            <div class="meta-item">📍 77m</div>
+            <div class="meta-item">🚪 로비</div>
+            <div class="meta-item">🕐 3시간 전</div>
+          </div>
+          <div class="expiry-bar"><div class="expiry-fill ok" style="width:75%"></div></div>
+          <div class="card-footer">
+            <div class="poster-info"><div class="avatar">🙃</div><div class="poster-name">영준님</div></div>
+            <button class="pick-btn claimed">완료됨</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-state" id="emptyState">
+      <div class="empty-icon">🥦</div>
+      <div class="empty-title">이 카테고리 나눔이 아직 없어요</div>
+      <div class="empty-desc">내 동네에서 처음 나누면<br>이웃들이 반길 거예요 🌿</div>
+      <button class="empty-cta" onclick="openShareModal()">첫 나눔 올리기</button>
+    </div>
+
+    <div class="feed-end"></div>
+  </div><!-- /homeView -->
+
+  <!-- MAP VIEW -->
+  <div id="mapView">
+    <div style="position:relative; height:calc(100dvh - 117px - 60px); overflow:hidden;">
+
+      <!-- Map Canvas -->
+      <div class="map-canvas">
+        <!-- Streets -->
+        <div class="street h" style="top:20%"></div>
+        <div class="street h" style="top:42%"></div>
+        <div class="street h" style="top:65%"></div>
+        <div class="street h" style="top:85%"></div>
+        <div class="street v" style="left:18%"></div>
+        <div class="street v" style="left:40%"></div>
+        <div class="street v" style="left:62%"></div>
+        <div class="street v" style="left:82%"></div>
+        <!-- Blocks -->
+        <div class="block park"  style="top:2%;left:2%;width:14%;height:16%"></div>
+        <div class="block bldg"  style="top:2%;left:21%;width:16%;height:16%"></div>
+        <div class="block bldg2" style="top:2%;left:43%;width:17%;height:16%"></div>
+        <div class="block bldg"  style="top:2%;left:65%;width:14%;height:16%"></div>
+        <div class="block park"  style="top:2%;left:84%;width:14%;height:16%"></div>
+        <div class="block bldg2" style="top:23%;left:2%;width:14%;height:16%"></div>
+        <div class="block bldg"  style="top:23%;left:21%;width:16%;height:16%"></div>
+        <div class="block park"  style="top:23%;left:43%;width:17%;height:16%"></div>
+        <div class="block bldg2" style="top:23%;left:65%;width:14%;height:16%"></div>
+        <div class="block bldg"  style="top:23%;left:84%;width:14%;height:16%"></div>
+        <div class="block bldg"  style="top:44%;left:2%;width:14%;height:18%"></div>
+        <div class="block bldg2" style="top:44%;left:21%;width:16%;height:18%"></div>
+        <div class="block bldg"  style="top:44%;left:43%;width:17%;height:18%"></div>
+        <div class="block park"  style="top:44%;left:65%;width:14%;height:18%"></div>
+        <div class="block bldg2" style="top:44%;left:84%;width:14%;height:18%"></div>
+        <div class="block bldg2" style="top:67%;left:2%;width:14%;height:16%"></div>
+        <div class="block bldg"  style="top:67%;left:21%;width:16%;height:16%"></div>
+        <div class="block bldg2" style="top:67%;left:43%;width:17%;height:16%"></div>
+        <div class="block bldg"  style="top:67%;left:65%;width:14%;height:16%"></div>
+        <div class="block park"  style="top:67%;left:84%;width:14%;height:16%"></div>
+      </div>
+
+      <!-- Radius ring -->
+      <div class="map-ring" id="mapRing" style="width:160px;height:160px;top:50%;left:50%;"></div>
+
+      <!-- My location -->
+      <div class="my-loc" style="top:50%;left:50%;">
+        <div class="my-loc-pulse"></div>
+        <div class="my-loc-dot"></div>
+      </div>
+
+      <!-- Pins -->
+      <div class="mpin" style="top:40%;left:61%;" onclick="openMapSheet('애호박 1개','🥦','#e8f5e9','신선 · 🚪 현관 앞','52m · 5분 전')">
+        <div class="mpin-bubble"><span class="mpin-emoji">🥦</span><div><div class="mpin-label">애호박 1개</div><div class="mpin-dist">52m</div></div></div>
+        <div class="mpin-tail"></div>
+      </div>
+      <div class="mpin" style="top:58%;left:37%;" onclick="openMapSheet('파스타면 200g','🍝','#fff8e1','미개봉 · 🚪 1층 택배함','80m · 23분 전')">
+        <div class="mpin-bubble"><span class="mpin-emoji">🍝</span><div><div class="mpin-label">파스타면</div><div class="mpin-dist">80m</div></div></div>
+        <div class="mpin-tail"></div>
+      </div>
+      <div class="mpin" style="top:65%;left:68%;" onclick="openMapSheet('계란 4개','🥚','#fffde7','신선 · 🚪 건물 입구','95m · 1시간 전')">
+        <div class="mpin-bubble urgent-pin"><span class="mpin-emoji">🥚</span><div><div class="mpin-label">계란 4개</div><div class="mpin-dist">95m</div></div></div>
+        <div class="mpin-tail urgent-tail"></div>
+      </div>
+      <div class="mpin" style="top:34%;left:44%;" onclick="openMapSheet('떡볶이 소스','🌶️','#fce4ec','밀봉 · 🚪 현관 앞','63m · 2시간 전')">
+        <div class="mpin-bubble"><span class="mpin-emoji">🌶️</span><div><div class="mpin-label">떡볶이 소스</div><div class="mpin-dist">63m</div></div></div>
+        <div class="mpin-tail"></div>
+      </div>
+      <div class="mpin" style="top:47%;left:24%;" onclick="openMapSheet('오이 3개','🥒','#e8f5e9','신선 · 🚪 건물 앞','51m · 10분 전')">
+        <div class="mpin-bubble urgent-pin"><span class="mpin-emoji">🥒</span><div><div class="mpin-label">오이 3개</div><div class="mpin-dist">51m</div></div></div>
+        <div class="mpin-tail urgent-tail"></div>
+      </div>
+
+      <!-- Controls -->
+      <div class="map-radius-bar">
+        <button class="map-r-pill active" onclick="setMapRadius(this,160,'100m')">100m</button>
+        <button class="map-r-pill" onclick="setMapRadius(this,240,'5분')">5분</button>
+        <button class="map-r-pill" onclick="setMapRadius(this,310,'10분')">10분</button>
+      </div>
+      <div class="map-controls">
+        <button class="map-ctrl-btn" onclick="showToast('현재 위치로 이동했어요')">🎯</button>
+        <button class="map-ctrl-btn" onclick="showToast('지도를 확대했어요')">＋</button>
+        <button class="map-ctrl-btn" onclick="showToast('지도를 축소했어요')">－</button>
+      </div>
+
+      <!-- Count badge -->
+      <div class="map-count-badge" id="mapCountBadge">
+        반경 100m 내 <span class="count-num">7개</span> 나눔 중
+      </div>
+
+      <!-- Bottom sheet -->
+      <div class="map-sheet" id="mapSheet">
+        <button class="map-sheet-close" onclick="closeMapSheet()">✕</button>
+        <div class="map-sheet-handle"></div>
+        <div class="map-sheet-card">
+          <div class="map-sheet-img" id="msImg">🥦</div>
+          <div class="map-sheet-info">
+            <div class="map-sheet-title" id="msTitle">애호박 1개</div>
+            <div class="map-sheet-meta" id="msMeta">신선 · 🚪 현관 앞<br>52m · 5분 전</div>
+          </div>
+        </div>
+        <button class="map-sheet-btn" id="msCta" onclick="showToast('픽업 요청을 보냈어요 ✅'); closeMapSheet()">가져갈게요</button>
+      </div>
+
+    </div>
+  </div><!-- /mapView -->
+
+  <!-- FAB -->
+  <button class="fab" onclick="openShareModal()" title="나눔 올리기">＋</button>
+
+  <!-- Bottom Nav -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" id="nav-home" onclick="switchTab('home',this)">
+      <span class="nav-icon">🏠</span><span class="nav-label">홈</span>
+    </button>
+    <button class="nav-item" id="nav-map" onclick="switchTab('map',this)">
+      <span class="nav-icon">🗺️</span><span class="nav-label">지도</span>
+    </button>
+    <button class="nav-item" onclick="openShareModal()">
+      <span class="nav-icon">➕</span><span class="nav-label">나눔</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('chat',this); showToast('채팅 기능을 준비 중이에요')">
+      <span class="nav-icon">💬</span><span class="nav-label">채팅</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('my',this); showToast('마이페이지를 준비 중이에요')">
+      <span class="nav-icon">👤</span><span class="nav-label">나</span>
+    </button>
+  </nav>
+
+  <!-- Share modal -->
+  <div class="modal-overlay" id="shareModal" onclick="closeModalOutside(event)">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title">나눔 올리기 🌿</div>
+      <div class="modal-sub">어떤 종류의 식재료를 나눌 건가요?</div>
+      <div class="type-grid">
+        <div class="type-card selected" onclick="selectType(this)">
+          <div class="type-icon">🔒</div><div class="type-name">미개봉</div>
+          <div class="type-desc">공장 밀봉<br>최고 신뢰도</div>
+        </div>
+        <div class="type-card" onclick="selectType(this)">
+          <div class="type-icon">🥬</div><div class="type-name">신선</div>
+          <div class="type-desc">채소·과일<br>유통기한 필수</div>
+        </div>
+        <div class="type-card" onclick="selectType(this)">
+          <div class="type-icon">🥫</div><div class="type-name">밀봉 가공</div>
+          <div class="type-desc">통조림·박스<br>장기보관</div>
+        </div>
+      </div>
+      <button class="modal-btn" onclick="showToast('나눔 등록 기능을 준비 중이에요 🌿'); closeShareModal()">다음 단계로 →</button>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+
+<script>
+/* ════════════════════════════════
+   ONBOARDING
+════════════════════════════════ */
+let obStep = 0;       // 0=splash → 1=login → 2=location → 3=radius → 4=trust
+let trustIdx = 0;
+let obRadiusLabel = '100m';
+let obLocSet = false;
+
+// Auto-advance splash after 1.8s
+setTimeout(() => nextOb(1), 1800);
+
+function nextOb(to) {
+  const cur = document.querySelector('.ob-screen.active');
+  if (cur) { cur.classList.add('exit'); setTimeout(() => cur.classList.remove('active','exit'), 350); }
+  obStep = to;
+  const screens = ['ob-splash','ob-login','ob-location','ob-radius','ob-trust'];
+  if (to >= screens.length) { finishOnboarding(); return; }
+  setTimeout(() => {
+    const next = document.getElementById(screens[to]);
+    if (next) next.classList.add('active');
+  }, 50);
+}
+function prevOb(to) { nextOb(to); }
+
+function setLocation() {
+  const box = document.getElementById('locBox');
+  box.classList.add('set');
+  box.innerHTML = '<span class="loc-emoji">✅</span><div class="loc-cta">마포구 망원동</div><div class="loc-hint">위치가 설정됐어요</div>';
+  obLocSet = true;
+  enableLocCta();
+}
+function checkManualLoc() {
+  const v = document.getElementById('manualLoc').value.trim();
+  if (v.length > 1) { obLocSet = true; enableLocCta(); }
+}
+function enableLocCta() {
+  const btn = document.getElementById('locCta');
+  btn.style.opacity = '1'; btn.style.pointerEvents = 'auto';
+}
+
+function selectObRadius(el, label, ringPx, level) {
+  document.querySelectorAll('.radius-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  obRadiusLabel = label;
+  // Update preview ring
+  const ring = document.getElementById('previewRing');
+  ring.style.width = ringPx + 'px'; ring.style.height = ringPx + 'px';
+  // Show/hide pins
+  document.getElementById('pin2').style.opacity = level >= '2' ? '1' : '0';
+  document.getElementById('pin3').style.opacity = level >= '2' ? '1' : '0';
+  document.getElementById('pin4').style.opacity = level >= '3' ? '1' : '0';
+}
+
+/* Trust carousel */
+function advanceTrust() {
+  if (trustIdx < 2) {
+    trustIdx++;
+    document.getElementById('trustSlides').style.transform = `translateX(-${trustIdx * 100}%)`;
+    document.querySelectorAll('#carouselDots span').forEach((d,i) => d.classList.toggle('active', i === trustIdx));
+    if (trustIdx === 2) document.getElementById('trustCta').textContent = '시작하기 🌿';
+  } else {
+    finishOnboarding();
+  }
+}
+
+function finishOnboarding() {
+  // Apply chosen location/radius to app header
+  const manual = document.getElementById('manualLoc').value.trim();
+  if (manual) document.getElementById('appLocName').textContent = manual;
+
+  const ob = document.getElementById('onboarding');
+  ob.style.transition = 'opacity .4s';
+  ob.style.opacity = '0';
+  setTimeout(() => { ob.style.display = 'none'; }, 400);
+
+  const app = document.getElementById('app');
+  app.classList.add('visible');
+
+  // Apply radius selection from onboarding
+  const pills = document.querySelectorAll('.pill');
+  const labelMap = { '100m': 0, '도보5분': 1, '도보 10분': 2 };
+  // default fine
+}
+
+/* ════════════════════════════════
+   APP — TABS
+════════════════════════════════ */
+function switchTab(tab, el) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+  if (tab === 'home') {
+    document.getElementById('homeView').classList.add('active');
+    document.getElementById('mapView').classList.remove('active');
+  } else if (tab === 'map') {
+    document.getElementById('homeView').classList.remove('active');
+    document.getElementById('mapView').classList.add('active');
+  } else {
+    document.getElementById('homeView').classList.add('active');
+    document.getElementById('mapView').classList.remove('active');
+  }
+}
+
+/* ════════════════════════════════
+   APP — RADIUS PILLS
+════════════════════════════════ */
+function selectRadius(el, label) {
+  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  const counts = { '100m': 7, '도보 5분': 14, '도보 10분': 23 };
+  document.getElementById('statsLabel').textContent = `내 반경 ${label} 안에`;
+  document.getElementById('statsValue').innerHTML = `${counts[label]}개 <span>나눔 중</span>`;
+  showToast(`${label} 반경으로 변경됐어요`);
+}
+
+/* ════════════════════════════════
+   APP — CATEGORY / SORT
+════════════════════════════════ */
+function filterCat(el, cat) {
+  document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  const feed = document.getElementById('feed');
+  const empty = document.getElementById('emptyState');
+  if (cat === 'sauce') { feed.style.display = 'none'; empty.style.display = 'block'; }
+  else { feed.style.display = 'flex'; empty.style.display = 'none'; }
+}
+function selectSort(el) {
+  document.querySelectorAll('.sort-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+/* ════════════════════════════════
+   MAP
+════════════════════════════════ */
+function setMapRadius(el, px, label) {
+  document.querySelectorAll('.map-r-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  const ring = document.getElementById('mapRing');
+  ring.style.width = px + 'px'; ring.style.height = px + 'px';
+  const counts = { '100m': 7, '5분': 14, '10분': 23 };
+  document.getElementById('mapCountBadge').innerHTML =
+    `반경 ${label} 내 <span class="count-num">${counts[label]}개</span> 나눔 중`;
+}
+
+function openMapSheet(title, emoji, bg, meta, dist) {
+  document.getElementById('msImg').textContent = emoji;
+  document.getElementById('msImg').style.background = bg;
+  document.getElementById('msTitle').textContent = title;
+  document.getElementById('msMeta').innerHTML = `${meta}<br>${dist}`;
+  document.getElementById('msCta').onclick = () => { showToast(`"${title}" 픽업 요청을 보냈어요 ✅`); closeMapSheet(); };
+  document.getElementById('mapSheet').classList.add('open');
+}
+function closeMapSheet() { document.getElementById('mapSheet').classList.remove('open'); }
+
+/* ════════════════════════════════
+   SHARE MODAL
+════════════════════════════════ */
+function openShareModal() { document.getElementById('shareModal').classList.add('open'); }
+function closeShareModal() { document.getElementById('shareModal').classList.remove('open'); }
+function closeModalOutside(e) { if (e.target.id === 'shareModal') closeShareModal(); }
+function selectType(el) {
+  document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+/* ════════════════════════════════
+   PICKUP / TOAST
+════════════════════════════════ */
+function openPickup(item) { showToast(`"${item}" 픽업 요청을 보냈어요 ✅`); }
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+</script>
+</body>
+</html>

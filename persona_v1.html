@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>1.5인분 — 퍼소나 카드 v1</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: #f0ede8;
+      min-height: 100vh;
+      padding: 48px 24px;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 52px;
+    }
+
+    .service-badge {
+      display: inline-block;
+      background: #1a1a1a;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      padding: 6px 16px;
+      border-radius: 100px;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+    }
+
+    .page-header h1 {
+      font-size: 32px;
+      font-weight: 900;
+      color: #1a1a1a;
+      letter-spacing: -0.02em;
+    }
+
+    .page-header p {
+      margin-top: 8px;
+      font-size: 14px;
+      color: #888;
+      font-weight: 400;
+    }
+
+    .cards-wrap {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(520px, 1fr));
+      gap: 32px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* ── 카드 ── */
+    .card {
+      background: #fff;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 4px 32px rgba(0,0,0,0.08);
+    }
+
+    /* 상단 헤더 */
+    .card-header {
+      padding: 32px 32px 24px;
+      position: relative;
+    }
+
+    .card--p1 .card-header { background: #1a1a1a; }
+    .card--p2 .card-header { background: #2d4a3e; }
+
+    .persona-number {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      opacity: 0.5;
+      color: #fff;
+      margin-bottom: 20px;
+    }
+
+    .persona-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      margin-bottom: 16px;
+    }
+
+    .card--p1 .persona-avatar { background: rgba(255,255,255,0.12); }
+    .card--p2 .persona-avatar { background: rgba(255,255,255,0.12); }
+
+    .persona-name {
+      font-size: 28px;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: -0.02em;
+    }
+
+    .persona-tagline {
+      font-size: 13px;
+      color: rgba(255,255,255,0.6);
+      margin-top: 6px;
+      font-weight: 400;
+    }
+
+    .persona-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .meta-chip {
+      background: rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.9);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 5px 12px;
+      border-radius: 100px;
+    }
+
+    .tech-score {
+      margin-top: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tech-label {
+      font-size: 11px;
+      color: rgba(255,255,255,0.5);
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .tech-dots {
+      display: flex;
+      gap: 4px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+    }
+
+    .dot.on { background: rgba(255,255,255,0.85); }
+
+    /* 카드 바디 */
+    .card-body {
+      padding: 28px 32px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* 섹션 */
+    .section-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #aaa;
+      margin-bottom: 12px;
+    }
+
+    /* 맥락 */
+    .context-box {
+      background: #f7f5f2;
+      border-radius: 14px;
+      padding: 16px 18px;
+      font-size: 13px;
+      color: #555;
+      line-height: 1.75;
+      border-left: 3px solid #ddd;
+    }
+
+    /* 목표 / 페인포인트 */
+    .item-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .item {
+      background: #f7f5f2;
+      border-radius: 14px;
+      padding: 14px 16px;
+    }
+
+    .item-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .item-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .goal .item-icon   { background: #e8f4ea; }
+    .pain .item-icon   { background: #fdecea; }
+
+    .item-text {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #1a1a1a;
+      line-height: 1.5;
+    }
+
+    .item-quote {
+      margin-top: 8px;
+      margin-left: 34px;
+      font-size: 11.5px;
+      color: #999;
+      line-height: 1.6;
+      padding: 6px 10px;
+      background: rgba(0,0,0,0.03);
+      border-radius: 6px;
+      border-left: 2px solid #e0ddd9;
+    }
+
+    .item-quote em {
+      font-style: normal;
+      color: #666;
+    }
+
+    .item-quote .who {
+      font-weight: 700;
+      color: #aaa;
+      font-size: 10.5px;
+      margin-left: 4px;
+    }
+
+    /* 행동 패턴 */
+    .pattern-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .pattern-list li {
+      font-size: 13px;
+      color: #555;
+      padding-left: 16px;
+      position: relative;
+      line-height: 1.6;
+    }
+
+    .pattern-list li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: #bbb;
+      font-size: 12px;
+    }
+
+    /* 결정적 한 마디 */
+    .quote-box {
+      border-radius: 16px;
+      padding: 20px 22px;
+      position: relative;
+    }
+
+    .card--p1 .quote-box { background: #1a1a1a; }
+    .card--p2 .quote-box { background: #2d4a3e; }
+
+    .quote-mark {
+      font-size: 40px;
+      line-height: 1;
+      color: rgba(255,255,255,0.15);
+      font-family: Georgia, serif;
+      position: absolute;
+      top: 12px;
+      left: 18px;
+    }
+
+    .quote-text {
+      font-size: 14px;
+      font-weight: 500;
+      color: #fff;
+      line-height: 1.8;
+      padding-left: 8px;
+    }
+
+    /* 구분선 */
+    .divider {
+      height: 1px;
+      background: #f0ede8;
+    }
+
+    /* 반응형 */
+    @media (max-width: 600px) {
+      .cards-wrap { grid-template-columns: 1fr; }
+      .card-header, .card-body { padding-left: 20px; padding-right: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="page-header">
+    <div class="service-badge">1.5인분 — Persona Card v1</div>
+    <h1>주요 타겟 퍼소나</h1>
+    <p>어피니티 다이어그램 인터뷰 데이터 기반 · 2명 · 2026.04</p>
+  </header>
+
+  <div class="cards-wrap">
+
+    <!-- ══════════════════════ PERSONA 1 ══════════════════════ -->
+    <div class="card card--p1">
+      <div class="card-header">
+        <div class="persona-number">Persona 01</div>
+        <div class="persona-avatar">🎓</div>
+        <div class="persona-name">이지수</div>
+        <div class="persona-tagline">아끼고 싶은데 자꾸 버리게 되는 자취러</div>
+        <div class="persona-meta">
+          <span class="meta-chip">25세</span>
+          <span class="meta-chip">대학원생 (이공계)</span>
+          <span class="meta-chip">원룸 자취</span>
+          <span class="meta-chip">월 식비 25~30만원</span>
+        </div>
+        <div class="tech-score">
+          <span class="tech-label">Tech</span>
+          <div class="tech-dots">
+            <div class="dot on"></div>
+            <div class="dot on"></div>
+            <div class="dot on"></div>
+            <div class="dot on"></div>
+            <div class="dot"></div>
+          </div>
+          <span class="tech-label">4/5 · 생활 앱 능숙, 복잡한 UX엔 이탈</span>
+        </div>
+      </div>
+
+      <div class="card-body">
+
+        <!-- 맥락 -->
+        <div>
+          <div class="section-label">상황 맥락</div>
+          <div class="context-box">
+            목요일 저녁 7시, 실험실에서 돌아와 냉장고를 열었다가 사흘 전에 산 두부가 물컹해진 걸 발견한다. 지난 주말에 "1+1이라 사뒀던" 양배추도 흐물흐물해졌다. 버리면서 또 죄책감이 든다. "그냥 누가 가져가 주면 안 되나?" 하고 앱을 찾게 된다.
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- 목표 -->
+        <div>
+          <div class="section-label">목표 Goals</div>
+          <div class="item-list">
+            <div class="item goal">
+              <div class="item-top">
+                <div class="item-icon">🎯</div>
+                <div class="item-text">식재료 폐기 전 마지막 탈출구 — 5분 안에 올려서 근처 누군가가 가져가게 하고 싶다</div>
+              </div>
+            </div>
+            <div class="item goal">
+              <div class="item-top">
+                <div class="item-icon">🛒</div>
+                <div class="item-text">소분 파트너 매칭으로 대파·양파·두부 등 처음부터 반씩 나눠 구매하고 싶다</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- 페인포인트 -->
+        <div>
+          <div class="section-label">페인포인트 Pain Points</div>
+          <div class="item-list">
+            <div class="item pain">
+              <div class="item-top">
+                <div class="item-icon">😤</div>
+                <div class="item-text">소포장은 너무 비싸고 대용량은 혼자 다 못 먹는다</div>
+              </div>
+              <div class="item-quote">
+                <em>"소포장 단위당 가격이 비싸 대용량을 억지로 산다."</em><span class="who">U2</span><br/>
+                <em>"1인 가구인데 마트가 대용량 묶음으로만 판다."</em><span class="who">U1</span>
+              </div>
+            </div>
+            <div class="item pain">
+              <div class="item-top">
+                <div class="item-icon">😞</div>
+                <div class="item-text">당근에 올려도 식재료 카테고리가 없고 신뢰도 안 간다</div>
+              </div>
+              <div class="item-quote">
+                <em>"신뢰할 수 있는 식재료 전용 플랫폼을 원한다."</em><span class="who">U4</span><br/>
+                <em>"올리는 과정이 복잡하지 않은 앱을 원한다."</em><span class="who">U1</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- 행동 패턴 -->
+        <div>
+          <div class="section-label">지금의 해결 방식</div>
+          <ul class="pattern-list">
+            <li>상하기 전에 급하게 당근에 "무료 나눔" 올려보다가 반응 없으면 그냥 버림</li>
+            <li>밀키트·라면 등 유통기한 긴 것만 골라서 나눔 시도</li>
+            <li>친구·동기에게 카카오톡으로 "이거 필요해?" 먼저 메시지 보냄</li>
+            <li>결국 버리고 "다음엔 적게 사야지" 다짐 반복</li>
+          </ul>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- 결정적 한 마디 -->
+        <div>
+          <div class="section-label">결정적 한 마디</div>
+          <div class="quote-box">
+            <div class="quote-mark">"</div>
+            <div class="quote-text">
+              절약하려고 요리 시작했는데… 어차피 버리면 배달 시켜 먹는 거랑 뭐가 달라요.<br/>
+              근처에 누가 가져가 줬으면 좋겠는데 그게 그렇게 어렵나요?
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ══════════════════════ PERSONA 2 ══════════════════════ -->
+    <div class="card card--p2">
+      <div class="card-header">
+        <div class="persona-number">Persona 02</div>
+        <div class="persona-avatar">💼</div>
+        <div class="persona-name">박재현</div>
+        <div class="persona-tagline">바쁘고 귀찮지만 버리는 건 싫은 직장인</div>
+        <div class="persona-meta">
+          <span class="meta-chip">29세</span>
+          <span class="meta-chip">IT 스타트업 마케터</span>
+          <span class="meta-chip">역세권 오피스텔</span>
+          <span class="meta-chip">월 식비 40~50만원</span>
+        </div>
+        <div class="tech-score">
+          <span class="tech-label">Tech</span>
+          <div class="tech-dots">
+            <div class="dot on"></div>
+            <div class="dot on"></div>
+            <div class="dot on"></div>
+            <div class="dot on"></div>
+            <div class="dot on"></div>
+          </div>
+          <span class="tech-label">5/5 · 헤비유저, 첫 경험 나쁘면 즉시 삭제</span>
+        </div>
+      </div>
+
+      <div class="card-body">
+
+        <!-- 맥락 -->
+        <div>
+          <div class="section-label">상황 맥락</div>
+          <div class="context-box">
+            금요일 밤 11시, 야근 후 귀가. 냉장고에 지난 주말에 의욕적으로 산 방울토마토·상추가 있다. 주말에 요리하려 했는데 이번 주도 배달만 시켜 먹었다. 버리자니 아깝고, 내놓자니 나가기는 싫다. "그냥 누가 와서 가져가면 안 되나" 하고 폰을 든다.
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- 목표 -->
+        <div>
+          <div class="section-label">목표 Goals</div>
+          <div class="item-list">
+            <div class="item goal">
+              <div class="item-top">
+                <div class="item-icon">🚪</div>
+                <div class="item-text">문 앞에 두고 알림만 보내면 상대가 픽업해 가는 완전 비대면 나눔 완료</div>
+              </div>
+            </div>
+            <div class="item goal">
+              <div class="item-top">
+                <div class="item-icon">🔄</div>
+                <div class="item-text">주말 구매 → 평일 방치 → 폐기 사이클을 끊을 소분·소량 매칭 구조 확보</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- 페인포인트 -->
+        <div>
+          <div class="section-label">페인포인트 Pain Points</div>
+          <div class="item-list">
+            <div class="item pain">
+              <div class="item-top">
+                <div class="item-icon">😤</div>
+                <div class="item-text">나눔하고 싶은데 직접 나가는 건 현실적으로 안 된다</div>
+              </div>
+              <div class="item-quote">
+                <em>"나눔 시 본인은 이동하지 않고 상대방이 집 앞으로 와야 한다."</em><span class="who">U10</span><br/>
+                <em>"시간 내 나가기 귀찮아 누가 와줘야 나눔을 한다."</em><span class="who">U9</span><br/>
+                <em>"상대방이 집 앞, 공동현관까지 와주길 원한다."</em><span class="who">U8</span>
+              </div>
+            </div>
+            <div class="item pain">
+              <div class="item-top">
+                <div class="item-icon">😞</div>
+                <div class="item-text">남의 식재료는 위생이 찝찝하고, 내 걸 올려도 타이밍을 자꾸 놓친다</div>
+              </div>
+              <div class="item-quote">
+                <em>"남의 식재료는 위생이 찝찝해 나눔 앱을 사용하지 않겠다."</em><span class="who">U10</span><br/>
+                <em>"불규칙한 일정으로 냉장고 관리가 안 된다."</em><span class="who">U9</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- 행동 패턴 -->
+        <div>
+          <div class="section-label">지금의 해결 방식</div>
+          <ul class="pattern-list">
+            <li>상한 식재료는 냉장고 안쪽으로 밀어놓고 "나중에 처리하자" 미루다 버림</li>
+            <li>스팸·참치캔 등 밀봉 제품은 당근 나눔 시도 (성공 경험 있음)</li>
+            <li>명절 선물 세트는 적극적으로 나눔, 신선 식재료는 선뜻 못 올림</li>
+            <li>배달 음식 남은 것은 나눔 절대 안 한다는 기준이 명확함</li>
+          </ul>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- 결정적 한 마디 -->
+        <div>
+          <div class="section-label">결정적 한 마디</div>
+          <div class="quote-box">
+            <div class="quote-mark">"</div>
+            <div class="quote-text">
+              버리면서 돈을 쓰레기통에 넣는 기분인 건 아는데요.<br/>
+              그렇다고 밤 11시에 나가서 건네줄 수는 없잖아요.<br/>
+              그냥 문 앞에 두면 누가 가져가는 구조면 할 것 같아요.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>
