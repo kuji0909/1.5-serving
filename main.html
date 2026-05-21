@@ -919,7 +919,7 @@
     #chatRoomView {
       position: fixed; inset: 0; z-index: 250;
       background: var(--bg); max-width: 430px; margin: 0 auto;
-      display: flex; flex-direction: column;
+      display: none; flex-direction: column;
       transform: translateX(100%);
       transition: transform .3s cubic-bezier(.22,.68,0,1.1);
     }
@@ -2376,12 +2376,17 @@ function openChatRoom(roomId) {
   input.value = ''; input.style.height = 'auto';
   document.getElementById('crSendBtn').disabled = true;
 
-  // 슬라이드 인
-  document.getElementById('chatRoomView').classList.add('open');
+  // 슬라이드 인 (display: flex 먼저, 다음 프레임에 open 클래스)
+  const view = document.getElementById('chatRoomView');
+  view.style.display = 'flex';
+  requestAnimationFrame(() => requestAnimationFrame(() => view.classList.add('open')));
 }
 
 function closeChatRoom() {
-  document.getElementById('chatRoomView').classList.remove('open');
+  const view = document.getElementById('chatRoomView');
+  view.classList.remove('open');
+  // 슬라이드 아웃 완료 후 완전히 숨기기
+  setTimeout(() => { view.style.display = 'none'; }, 320);
   currentRoomId = null;
 }
 
