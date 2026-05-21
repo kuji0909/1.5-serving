@@ -684,14 +684,47 @@
     .modal-sheet {
       width: 100%; max-width: 430px;
       background: var(--bg-card); border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-      padding: 20px 24px calc(28px + var(--safe-bottom));
+      max-height: 92dvh; display: flex; flex-direction: column;
       animation: slideUp .28s cubic-bezier(.22,.68,0,1.2);
     }
     @keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
-    .modal-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 20px; }
+
+    /* 고정 헤더 */
+    .modal-header {
+      padding: 16px 24px 0; flex-shrink: 0;
+    }
+    .modal-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 16px; }
+
+    /* 스텝 진행바 */
+    .modal-steps {
+      display: flex; align-items: center; gap: 6px; margin-bottom: 16px;
+    }
+    .modal-step-bar {
+      flex: 1; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden;
+    }
+    .modal-step-bar .fill { height: 100%; background: var(--green-main); border-radius: 2px; transition: width .4s ease; }
+    .modal-step-label { font-size: 11px; font-weight: 700; color: var(--text-muted); white-space: nowrap; }
+
+    /* 타이틀 */
     .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
-    .modal-sub   { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; }
-    .type-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+    .modal-sub   { font-size: 13px; color: var(--text-muted); margin-bottom: 0; }
+
+    /* 스크롤 본문 */
+    .modal-body {
+      flex: 1; overflow-y: auto; padding: 16px 24px 0;
+      scrollbar-width: none;
+    }
+    .modal-body::-webkit-scrollbar { display: none; }
+
+    /* 고정 푸터 */
+    .modal-footer {
+      padding: 16px 24px calc(20px + var(--safe-bottom));
+      flex-shrink: 0; border-top: 1px solid var(--border);
+      display: flex; gap: 10px;
+    }
+
+    /* 종류 선택 카드 */
+    .type-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 4px; }
     .type-card {
       border: 2px solid var(--border); border-radius: var(--radius-md);
       padding: 14px 8px; text-align: center; cursor: pointer; transition: all .15s;
@@ -700,12 +733,112 @@
     .type-icon { font-size: 28px; margin-bottom: 6px; }
     .type-name { font-size: 12px; font-weight: 700; }
     .type-desc { font-size: 10px; color: var(--text-muted); margin-top: 2px; line-height: 1.4; }
+
+    /* 폼 공통 */
+    .form-group { margin-bottom: 18px; }
+    .form-label {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 13px; font-weight: 700; color: var(--text-dark); margin-bottom: 8px;
+    }
+    .form-label .req { color: #e84040; font-size: 11px; }
+    .form-input {
+      width: 100%; padding: 13px 16px; border-radius: var(--radius-md);
+      border: 1.5px solid var(--border); background: var(--bg-sub);
+      font-family: var(--font); font-size: 14px; color: var(--text-dark);
+      outline: none; transition: border-color .15s;
+      -webkit-appearance: none;
+    }
+    .form-input:focus { border-color: var(--green-main); background: #fff; }
+    .form-input::placeholder { color: var(--text-muted); }
+    .form-textarea {
+      width: 100%; padding: 13px 16px; border-radius: var(--radius-md);
+      border: 1.5px solid var(--border); background: var(--bg-sub);
+      font-family: var(--font); font-size: 14px; color: var(--text-dark);
+      outline: none; resize: none; line-height: 1.6; transition: border-color .15s;
+    }
+    .form-textarea:focus { border-color: var(--green-main); background: #fff; }
+    .form-textarea::placeholder { color: var(--text-muted); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    /* 사진 업로드 */
+    .photo-upload-area {
+      border: 2px dashed var(--border); border-radius: var(--radius-md);
+      padding: 20px; text-align: center; cursor: pointer;
+      transition: border-color .2s, background .2s; position: relative;
+    }
+    .photo-upload-area:hover { border-color: var(--green-main); background: var(--green-pale); }
+    .photo-upload-area input[type=file] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+    }
+    .photo-upload-icon { font-size: 32px; margin-bottom: 8px; display: block; }
+    .photo-upload-cta  { font-size: 14px; font-weight: 700; color: var(--green-main); }
+    .photo-upload-hint { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+    .photo-previews { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .photo-thumb {
+      width: 70px; height: 70px; border-radius: var(--radius-sm);
+      object-fit: cover; border: 1px solid var(--border); position: relative;
+    }
+    .photo-thumb-wrap { position: relative; display: inline-block; }
+    .photo-thumb-del {
+      position: absolute; top: -5px; right: -5px;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: #e84040; color: #fff; font-size: 10px; font-weight: 700;
+      border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+      line-height: 1;
+    }
+
+    /* 픽업 장소 선택 */
+    .pickup-opts { display: flex; flex-direction: column; gap: 8px; }
+    .pickup-opt {
+      display: flex; align-items: center; gap: 12px;
+      border: 1.5px solid var(--border); border-radius: var(--radius-md);
+      padding: 12px 14px; cursor: pointer; transition: all .15s;
+    }
+    .pickup-opt.selected { border-color: var(--green-main); background: var(--green-pale); }
+    .pickup-opt .po-icon { font-size: 20px; }
+    .pickup-opt .po-text { flex: 1; font-size: 14px; font-weight: 600; color: var(--text-dark); }
+    .pickup-opt .po-check {
+      width: 18px; height: 18px; border-radius: 50%;
+      border: 2px solid var(--border); transition: all .15s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .pickup-opt.selected .po-check { background: var(--green-main); border-color: var(--green-main); }
+    .pickup-opt.selected .po-check::after { content:'✓'; font-size: 10px; color: #fff; font-weight: 700; }
+
+    /* 픽업 방식 토글 */
+    .method-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .method-opt {
+      border: 1.5px solid var(--border); border-radius: var(--radius-md);
+      padding: 12px 10px; text-align: center; cursor: pointer; transition: all .15s;
+    }
+    .method-opt.selected { border-color: var(--green-main); background: var(--green-pale); }
+    .method-opt .mo-icon { font-size: 22px; margin-bottom: 5px; }
+    .method-opt .mo-name { font-size: 13px; font-weight: 700; color: var(--text-dark); }
+    .method-opt .mo-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+    /* 버튼 */
     .modal-btn {
-      width: 100%; padding: 16px; border-radius: var(--radius-full);
-      background: var(--green-main); color: #fff; font-size: 16px; font-weight: 700;
-      border: none; cursor: pointer; font-family: var(--font);
+      flex: 1; padding: 15px; border-radius: var(--radius-full);
+      background: var(--green-main); color: #fff; font-size: 15px; font-weight: 700;
+      border: none; cursor: pointer; font-family: var(--font); transition: background .15s;
     }
     .modal-btn:hover { background: var(--green-deep); }
+    .modal-btn:active { transform: scale(.98); }
+    .modal-btn-back {
+      padding: 15px 20px; border-radius: var(--radius-full);
+      border: 1.5px solid var(--border); background: none; color: var(--text-mid);
+      font-size: 15px; font-weight: 600; cursor: pointer; font-family: var(--font);
+    }
+
+    /* 완료 화면 */
+    .submit-success {
+      text-align: center; padding: 32px 0 12px;
+    }
+    .submit-success .ss-icon { font-size: 56px; margin-bottom: 14px; display: block;
+      animation: popIn .4s cubic-bezier(.22,.68,0,1.4); }
+    @keyframes popIn { from{transform:scale(.5);opacity:0} to{transform:scale(1);opacity:1} }
+    .submit-success .ss-title { font-size: 20px; font-weight: 900; margin-bottom: 6px; }
+    .submit-success .ss-desc  { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
 
     /* ══════════════════════════════════════
        TOAST
@@ -718,6 +851,16 @@
       opacity: 0; transition: all .28s; pointer-events: none;
     }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    @keyframes fadeInCard {
+      from { opacity:0; transform:translateY(-12px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    @keyframes shake {
+      0%,100%{ transform:translateX(0); }
+      25%    { transform:translateX(-6px); }
+      75%    { transform:translateX(6px); }
+    }
   </style>
 </head>
 <body>
@@ -1258,24 +1401,164 @@
   <!-- Share modal -->
   <div class="modal-overlay" id="shareModal" onclick="closeModalOutside(event)">
     <div class="modal-sheet">
-      <div class="modal-handle"></div>
-      <div class="modal-title">나눔 올리기 🌿</div>
-      <div class="modal-sub">어떤 종류의 식재료를 나눌 건가요?</div>
-      <div class="type-grid">
-        <div class="type-card selected" onclick="selectType(this)">
-          <div class="type-icon">🔒</div><div class="type-name">미개봉</div>
-          <div class="type-desc">공장 밀봉<br>최고 신뢰도</div>
+
+      <!-- 고정 헤더 -->
+      <div class="modal-header">
+        <div class="modal-handle"></div>
+        <div class="modal-steps" id="modalSteps">
+          <div class="modal-step-bar"><div class="fill" id="stepFill1" style="width:100%"></div></div>
+          <div class="modal-step-bar"><div class="fill" id="stepFill2" style="width:0%"></div></div>
+          <div class="modal-step-bar"><div class="fill" id="stepFill3" style="width:0%"></div></div>
+          <span class="modal-step-label" id="stepLabel">1 / 3</span>
         </div>
-        <div class="type-card" onclick="selectType(this)">
-          <div class="type-icon">🥬</div><div class="type-name">신선</div>
-          <div class="type-desc">채소·과일<br>유통기한 필수</div>
-        </div>
-        <div class="type-card" onclick="selectType(this)">
-          <div class="type-icon">🥫</div><div class="type-name">밀봉 가공</div>
-          <div class="type-desc">통조림·박스<br>장기보관</div>
-        </div>
+        <div class="modal-title" id="modalTitle">나눔 올리기 🌿</div>
+        <div class="modal-sub" id="modalSub">어떤 종류의 식재료인가요?</div>
       </div>
-      <button class="modal-btn" onclick="showToast('나눔 등록 기능을 준비 중이에요 🌿'); closeShareModal()">다음 단계로 →</button>
+
+      <!-- 스크롤 본문 -->
+      <div class="modal-body" id="modalBody">
+
+        <!-- ── STEP 1: 종류 선택 ── -->
+        <div id="formStep1">
+          <div style="height:14px;"></div>
+          <div class="type-grid">
+            <div class="type-card selected" onclick="selectType(this,'unopened','미개봉')">
+              <div class="type-icon">🔒</div><div class="type-name">미개봉</div>
+              <div class="type-desc">공장 밀봉<br>최고 신뢰도</div>
+            </div>
+            <div class="type-card" onclick="selectType(this,'fresh','신선')">
+              <div class="type-icon">🥬</div><div class="type-name">신선</div>
+              <div class="type-desc">채소·과일<br>유통기한 필수</div>
+            </div>
+            <div class="type-card" onclick="selectType(this,'sealed','밀봉 가공')">
+              <div class="type-icon">🥫</div><div class="type-name">밀봉 가공</div>
+              <div class="type-desc">통조림·박스<br>장기보관</div>
+            </div>
+          </div>
+          <div style="height:16px;"></div>
+        </div>
+
+        <!-- ── STEP 2: 기본 정보 ── -->
+        <div id="formStep2" style="display:none;">
+          <!-- 사진 첨부 -->
+          <div class="form-group">
+            <div class="form-label">
+              📷 사진 첨부 <span class="req" id="photoReq">(신선 식품 필수)</span>
+            </div>
+            <div class="photo-upload-area" id="photoUploadArea">
+              <input type="file" accept="image/*" multiple onchange="handlePhoto(event)" id="photoInput" />
+              <span class="photo-upload-icon">📸</span>
+              <div class="photo-upload-cta">사진 추가하기</div>
+              <div class="photo-upload-hint">최대 3장 · JPG, PNG</div>
+            </div>
+            <div class="photo-previews" id="photoPreviews"></div>
+          </div>
+
+          <!-- 이름 -->
+          <div class="form-group">
+            <div class="form-label">식재료 이름 <span class="req">*</span></div>
+            <input class="form-input" type="text" id="foodName" placeholder="예) 애호박 1개, 파스타면 200g" />
+          </div>
+
+          <!-- 수량 + 단위 -->
+          <div class="form-group">
+            <div class="form-row">
+              <div>
+                <div class="form-label">수량 <span class="req">*</span></div>
+                <input class="form-input" type="number" id="foodQty" placeholder="1" min="1" />
+              </div>
+              <div>
+                <div class="form-label">단위</div>
+                <input class="form-input" type="text" id="foodUnit" placeholder="개, g, 팩..." />
+              </div>
+            </div>
+          </div>
+
+          <!-- 설명 -->
+          <div class="form-group">
+            <div class="form-label">한 줄 설명</div>
+            <textarea class="form-textarea" id="foodDesc" rows="2" placeholder="예) 마트에서 묶음으로 샀는데 혼자 다 못 먹겠어요"></textarea>
+          </div>
+
+          <!-- 유통기한 (신선만 표시) -->
+          <div class="form-group" id="expiryGroup">
+            <div class="form-label">유통기한 <span class="req" id="expiryReq">*</span></div>
+            <input class="form-input" type="date" id="foodExpiry" />
+          </div>
+
+          <div style="height:8px;"></div>
+        </div>
+
+        <!-- ── STEP 3: 픽업 설정 ── -->
+        <div id="formStep3" style="display:none;">
+
+          <!-- 픽업 장소 -->
+          <div class="form-group">
+            <div class="form-label">🚪 픽업 장소 <span class="req">*</span></div>
+            <div class="pickup-opts" id="pickupOpts">
+              <div class="pickup-opt selected" onclick="selectPickup(this,'현관 앞')">
+                <span class="po-icon">🏠</span>
+                <span class="po-text">현관 앞</span>
+                <span class="po-check"></span>
+              </div>
+              <div class="pickup-opt" onclick="selectPickup(this,'1층 택배함')">
+                <span class="po-icon">📦</span>
+                <span class="po-text">1층 택배함</span>
+                <span class="po-check"></span>
+              </div>
+              <div class="pickup-opt" onclick="selectPickup(this,'건물 입구')">
+                <span class="po-icon">🏢</span>
+                <span class="po-text">건물 입구</span>
+                <span class="po-check"></span>
+              </div>
+              <div class="pickup-opt" onclick="selectPickup(this,'직접입력')">
+                <span class="po-icon">✏️</span>
+                <span class="po-text">직접 입력</span>
+                <span class="po-check"></span>
+              </div>
+            </div>
+            <input class="form-input" type="text" id="pickupCustom"
+              placeholder="픽업 장소를 입력해주세요"
+              style="display:none; margin-top:10px;" />
+          </div>
+
+          <!-- 픽업 방식 -->
+          <div class="form-group">
+            <div class="form-label">🤝 픽업 방식 <span class="req">*</span></div>
+            <div class="method-row">
+              <div class="method-opt selected" onclick="selectMethod(this)">
+                <div class="mo-icon">🚶</div>
+                <div class="mo-name">두고 가기</div>
+                <div class="mo-desc">비대면 픽업</div>
+              </div>
+              <div class="method-opt" onclick="selectMethod(this)">
+                <div class="mo-icon">🤝</div>
+                <div class="mo-name">직접 전달</div>
+                <div class="mo-desc">직접 만나서</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="height:8px;"></div>
+        </div>
+
+        <!-- ── STEP 4: 완료 ── -->
+        <div id="formStep4" style="display:none;">
+          <div class="submit-success">
+            <span class="ss-icon">🎉</span>
+            <div class="ss-title">나눔이 등록됐어요!</div>
+            <div class="ss-desc">이웃들에게 알림이 전송됐어요.<br>따뜻한 나눔 감사해요 🌿</div>
+          </div>
+        </div>
+
+      </div><!-- /modal-body -->
+
+      <!-- 고정 푸터 -->
+      <div class="modal-footer" id="modalFooter">
+        <button class="modal-btn-back" id="modalBackBtn" style="display:none;" onclick="formPrev()">← 이전</button>
+        <button class="modal-btn" id="modalNextBtn" onclick="formNext()">다음 →</button>
+      </div>
+
     </div>
   </div>
 
@@ -1440,14 +1723,227 @@ function openMapSheet(title, emoji, bg, meta, dist) {
 function closeMapSheet() { document.getElementById('mapSheet').classList.remove('open'); }
 
 /* ════════════════════════════════
-   SHARE MODAL
+   SHARE MODAL — MULTI-STEP FORM
 ════════════════════════════════ */
-function openShareModal() { document.getElementById('shareModal').classList.add('open'); }
-function closeShareModal() { document.getElementById('shareModal').classList.remove('open'); }
-function closeModalOutside(e) { if (e.target.id === 'shareModal') closeShareModal(); }
-function selectType(el) {
+let formStep = 1;
+let selectedType = 'unopened';
+let selectedTypeName = '미개봉';
+let selectedPickup = '현관 앞';
+let selectedMethod = '두고 가기';
+let photoFiles = [];
+
+const STEPS = {
+  1: { title:'나눔 올리기 🌿',   sub:'어떤 종류의 식재료인가요?',          next:'다음 →' },
+  2: { title:'식재료 정보 입력',  sub:'나눔할 식재료를 알려주세요',          next:'다음 →' },
+  3: { title:'픽업 설정',         sub:'이웃이 어디서 받아갈 수 있나요?',     next:'등록하기 ✅' },
+  4: { title:'등록 완료!',        sub:'',                                     next:'확인' },
+};
+
+function openShareModal() {
+  formStep = 1;
+  resetForm();
+  renderStep(1);
+  document.getElementById('shareModal').classList.add('open');
+}
+function closeShareModal() {
+  document.getElementById('shareModal').classList.remove('open');
+}
+function closeModalOutside(e) {
+  if (e.target.id === 'shareModal') closeShareModal();
+}
+
+function resetForm() {
+  selectedType = 'unopened'; selectedTypeName = '미개봉';
+  selectedPickup = '현관 앞'; selectedMethod = '두고 가기';
+  photoFiles = [];
+  const n = document.getElementById('foodName'); if(n) n.value = '';
+  const q = document.getElementById('foodQty');  if(q) q.value = '';
+  const u = document.getElementById('foodUnit'); if(u) u.value = '';
+  const d = document.getElementById('foodDesc'); if(d) d.value = '';
+  const e = document.getElementById('foodExpiry'); if(e) e.value = '';
+  const p = document.getElementById('photoPreviews'); if(p) p.innerHTML = '';
+  const c = document.getElementById('pickupCustom'); if(c) { c.value=''; c.style.display='none'; }
+  document.querySelectorAll('.type-card').forEach((c,i) => c.classList.toggle('selected', i===0));
+  document.querySelectorAll('.pickup-opt').forEach((c,i) => c.classList.toggle('selected', i===0));
+  document.querySelectorAll('.method-opt').forEach((c,i) => c.classList.toggle('selected', i===0));
+}
+
+function renderStep(step) {
+  // 본문 패널
+  [1,2,3,4].forEach(n => {
+    document.getElementById('formStep'+n).style.display = (n === step) ? 'block' : 'none';
+  });
+  // 헤더
+  document.getElementById('modalTitle').textContent = STEPS[step].title;
+  document.getElementById('modalSub').textContent   = STEPS[step].sub;
+  // 진행바
+  [1,2,3].forEach(n => {
+    document.getElementById('stepFill'+n).style.width = (n <= step) ? '100%' : '0%';
+  });
+  document.getElementById('stepLabel').textContent = step < 4 ? `${step} / 3` : '완료 🎉';
+  document.getElementById('modalSteps').style.display = step === 4 ? 'none' : 'flex';
+  // 버튼
+  const back = document.getElementById('modalBackBtn');
+  const next = document.getElementById('modalNextBtn');
+  back.style.display = (step > 1 && step < 4) ? 'block' : 'none';
+  next.textContent = STEPS[step].next;
+  // 유통기한 표시 (신선만)
+  if (step === 2) {
+    const eg = document.getElementById('expiryGroup');
+    const isFresh = selectedType === 'fresh';
+    eg.style.display = isFresh ? 'block' : 'none';
+    document.getElementById('photoReq').textContent = isFresh ? '(신선 식품 필수)' : '(선택)';
+  }
+  // 스크롤 초기화
+  document.getElementById('modalBody').scrollTop = 0;
+}
+
+function formNext() {
+  if (formStep === 1) {
+    formStep = 2; renderStep(2); return;
+  }
+  if (formStep === 2) {
+    // 유효성 검사
+    const name = document.getElementById('foodName').value.trim();
+    const qty  = document.getElementById('foodQty').value.trim();
+    if (!name) { shakeInput('foodName'); showToast('식재료 이름을 입력해주세요'); return; }
+    if (!qty)  { shakeInput('foodQty');  showToast('수량을 입력해주세요'); return; }
+    if (selectedType === 'fresh') {
+      const exp = document.getElementById('foodExpiry').value;
+      if (!exp) { shakeInput('foodExpiry'); showToast('신선 식품은 유통기한이 필수예요'); return; }
+    }
+    formStep = 3; renderStep(3); return;
+  }
+  if (formStep === 3) {
+    if (selectedPickup === '직접입력') {
+      const cv = document.getElementById('pickupCustom').value.trim();
+      if (!cv) { shakeInput('pickupCustom'); showToast('픽업 장소를 입력해주세요'); return; }
+    }
+    submitForm(); return;
+  }
+  if (formStep === 4) {
+    closeShareModal(); return;
+  }
+}
+
+function formPrev() {
+  if (formStep > 1) { formStep--; renderStep(formStep); }
+}
+
+function submitForm() {
+  const name    = document.getElementById('foodName').value.trim();
+  const qty     = document.getElementById('foodQty').value.trim();
+  const unit    = document.getElementById('foodUnit').value.trim() || '개';
+  const desc    = document.getElementById('foodDesc').value.trim();
+  const pickup  = selectedPickup === '직접입력'
+    ? document.getElementById('pickupCustom').value.trim()
+    : selectedPickup;
+
+  // 피드에 카드 추가
+  addFeedCard({ name, qty, unit, desc, pickup, type: selectedType, typeName: selectedTypeName });
+
+  formStep = 4; renderStep(4);
+  document.getElementById('modalFooter').style.borderTop = 'none';
+}
+
+function addFeedCard({ name, qty, unit, desc, pickup, type, typeName }) {
+  const icons = { unopened:'🔒', fresh:'🥬', sealed:'🥫' };
+  const bgs   = { unopened:'#e3f4ff', fresh:'#e8f5e9', sealed:'#fff3e0' };
+  const foods = ['🥦','🥕','🍅','🧅','🌽','🍋','🫙','🥚','🍝','🍞'];
+  const emoji = foods[Math.floor(Math.random()*foods.length)];
+
+  const badgeClass = type;
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.style.animation = 'fadeInCard .4s ease both';
+  card.innerHTML = `
+    <div class="card-img">
+      <div class="card-img-bg" style="background:${bgs[type]};">${emoji}</div>
+      <div class="trust-badge ${badgeClass}">${icons[type]} ${typeName}</div>
+    </div>
+    <div class="card-body">
+      <div class="card-top">
+        <div class="card-title">${name} ${qty}${unit}</div>
+        <div class="card-free">무료</div>
+      </div>
+      <div class="card-desc">${desc || '이웃과 나눠요 🌿'}</div>
+      <div class="card-meta">
+        <div class="meta-item">📍 내 근처</div>
+        <div class="meta-item">🚪 ${pickup}</div>
+        <div class="meta-item">🕐 방금 전</div>
+      </div>
+      <div class="expiry-bar"><div class="expiry-fill ok" style="width:90%"></div></div>
+      <div class="card-footer">
+        <div class="poster-info">
+          <div class="avatar">😊</div>
+          <div class="poster-name">나</div>
+        </div>
+        <button class="pick-btn claimed" style="cursor:default;">내 나눔</button>
+      </div>
+    </div>`;
+
+  const feed = document.getElementById('feed');
+  feed.style.display = 'flex';
+  document.getElementById('emptyState').style.display = 'none';
+  feed.insertBefore(card, feed.firstChild);
+}
+
+function selectType(el, type, name) {
   document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
   el.classList.add('selected');
+  selectedType = type; selectedTypeName = name;
+}
+
+function selectPickup(el, val) {
+  document.querySelectorAll('.pickup-opt').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedPickup = val;
+  const custom = document.getElementById('pickupCustom');
+  custom.style.display = val === '직접입력' ? 'block' : 'none';
+  if (val === '직접입력') custom.focus();
+}
+
+function selectMethod(el) {
+  document.querySelectorAll('.method-opt').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedMethod = el.querySelector('.mo-name').textContent;
+}
+
+/* 사진 미리보기 */
+function handlePhoto(e) {
+  const files = Array.from(e.target.files);
+  const remaining = 3 - photoFiles.length;
+  const toAdd = files.slice(0, remaining);
+  toAdd.forEach(f => {
+    photoFiles.push(f);
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const wrap = document.createElement('div');
+      wrap.className = 'photo-thumb-wrap';
+      const idx = photoFiles.indexOf(f);
+      wrap.innerHTML = `<img src="${ev.target.result}" class="photo-thumb" />
+        <button class="photo-thumb-del" onclick="removePhoto(${idx},this.parentNode)">✕</button>`;
+      document.getElementById('photoPreviews').appendChild(wrap);
+    };
+    reader.readAsDataURL(f);
+  });
+  if (photoFiles.length >= 3) document.getElementById('photoInput').disabled = true;
+  e.target.value = '';
+}
+
+function removePhoto(idx, wrap) {
+  photoFiles.splice(idx, 1);
+  wrap.remove();
+  document.getElementById('photoInput').disabled = false;
+}
+
+/* 입력 오류 흔들기 */
+function shakeInput(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.borderColor = '#e84040';
+  el.style.animation = 'shake .3s ease';
+  setTimeout(() => { el.style.animation=''; el.style.borderColor=''; }, 600);
 }
 
 /* ════════════════════════════════
