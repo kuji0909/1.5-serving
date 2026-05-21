@@ -319,8 +319,8 @@
     .pill.active { background: var(--green-main); border-color: var(--green-main); color: #fff; font-weight: 700; }
 
     /* ── VIEW TOGGLE ── */
-    #homeView, #mapView, #chatView { display: none; }
-    #homeView.active, #mapView.active, #chatView.active { display: block; }
+    #homeView, #mapView, #chatView, #myView { display: none; }
+    #homeView.active, #mapView.active, #chatView.active, #myView.active { display: block; }
 
     /* ── SEARCH ── */
     .search-wrap { padding: 12px 20px 0; }
@@ -1070,6 +1070,253 @@
     .cr-send-btn:hover  { background: var(--green-deep); }
     .cr-send-btn:active { transform: scale(.92); }
     .cr-send-btn:disabled { background: var(--border); cursor: not-allowed; }
+
+    /* ══════════════════════════════════════
+       NOTIFICATION PANEL
+    ══════════════════════════════════════ */
+    #notifPanel {
+      position: fixed; top: 0; left: 50%; transform: translateX(-50%) translateY(-110%);
+      width: 100%; max-width: 430px; z-index: 350;
+      background: var(--bg-card); border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      transition: transform .32s cubic-bezier(.22,.68,0,1.1);
+    }
+    #notifPanel.open { transform: translateX(-50%) translateY(0); }
+    #notifOverlay {
+      display: none; position: fixed; inset: 0; z-index: 345;
+      background: rgba(0,0,0,.35);
+    }
+    #notifOverlay.open { display: block; }
+    .notif-panel-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 20px 12px; border-bottom: 1px solid var(--border);
+    }
+    .notif-panel-title { font-size: 18px; font-weight: 900; }
+    .notif-close-btn {
+      width: 32px; height: 32px; border-radius: 50%; border: none; background: var(--bg-sub);
+      cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center;
+    }
+    .notif-list { padding: 8px 0; }
+    .notif-item {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 13px 20px; cursor: pointer; transition: background .12s;
+      border-bottom: 1px solid var(--border);
+    }
+    .notif-item:last-child { border-bottom: none; }
+    .notif-item:active { background: var(--bg-sub); }
+    .notif-item.unread { background: #f0f8f0; }
+    .notif-emoji { font-size: 24px; flex-shrink: 0; margin-top: 2px; }
+    .notif-content { flex: 1; }
+    .notif-text { font-size: 14px; color: var(--text-dark); line-height: 1.45; font-weight: 500; }
+    .notif-item.unread .notif-text { font-weight: 700; }
+    .notif-time { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+    .notif-unread-dot {
+      width: 8px; height: 8px; border-radius: 50%; background: var(--green-main);
+      flex-shrink: 0; margin-top: 6px;
+    }
+
+    /* ══════════════════════════════════════
+       GENERIC BOTTOM-SHEET EXTRAS
+    ══════════════════════════════════════ */
+    .sheet-title-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 20px 0;
+    }
+    .sheet-title { font-size: 18px; font-weight: 900; }
+    .sheet-close-btn {
+      width: 32px; height: 32px; border-radius: 50%; border: none; background: var(--bg-sub);
+      cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center;
+    }
+    .sheet-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 14px auto 0; }
+
+    /* Location sheet */
+    .loc-sheet-body { padding: 16px 20px; }
+    .loc-gps-btn {
+      width: 100%; padding: 14px; border-radius: var(--radius-full);
+      background: var(--green-pale); color: var(--green-deep); border: 1.5px solid var(--green-main);
+      font-size: 15px; font-weight: 700; cursor: pointer; font-family: var(--font); margin-bottom: 14px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .loc-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .loc-chip {
+      padding: 8px 16px; border-radius: var(--radius-full); background: var(--bg-sub);
+      border: 1.5px solid var(--border); font-size: 13px; font-weight: 600; color: var(--text-mid);
+      cursor: pointer; font-family: var(--font); transition: all .15s;
+    }
+    .loc-chip:hover { border-color: var(--green-main); color: var(--green-main); background: var(--green-pale); }
+
+    /* Filter sheet */
+    .filter-body { padding: 16px 20px; }
+    .filter-section { margin-bottom: 20px; }
+    .filter-section-title { font-size: 13px; font-weight: 700; color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase; letter-spacing: .5px; }
+    .filter-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .filter-chip {
+      padding: 7px 15px; border-radius: var(--radius-full); background: var(--bg-sub);
+      border: 1.5px solid var(--border); font-size: 13px; font-weight: 600; color: var(--text-mid);
+      cursor: pointer; font-family: var(--font); transition: all .15s;
+    }
+    .filter-chip.active { background: var(--green-pale); border-color: var(--green-main); color: var(--green-deep); }
+    .filter-footer { display: flex; gap: 10px; padding: 16px 20px calc(24px + var(--safe-bottom)); border-top: 1px solid var(--border); }
+    .filter-reset-btn {
+      padding: 14px 20px; border-radius: var(--radius-full); border: 1.5px solid var(--border);
+      background: none; color: var(--text-mid); font-size: 15px; font-weight: 600;
+      cursor: pointer; font-family: var(--font);
+    }
+    .filter-apply-btn {
+      flex: 1; padding: 14px; border-radius: var(--radius-full); background: var(--green-main);
+      color: #fff; font-size: 15px; font-weight: 700; border: none; cursor: pointer; font-family: var(--font);
+    }
+
+    /* Urgent All sheet */
+    #urgentAllSheet .modal-sheet { max-height: 85dvh; }
+    .urgent-all-list { padding: 12px 20px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; }
+    .urgent-all-card {
+      display: flex; align-items: center; gap: 14px;
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md);
+      padding: 12px 14px; cursor: pointer; transition: background .12s; box-shadow: var(--shadow-sm);
+    }
+    .urgent-all-card:active { background: var(--bg-sub); }
+    .urgent-all-emoji {
+      width: 56px; height: 56px; border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; flex-shrink: 0; background: var(--green-pale);
+    }
+    .urgent-all-info { flex: 1; }
+    .urgent-all-name { font-size: 15px; font-weight: 700; color: var(--text-dark); }
+    .urgent-all-meta { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+    .urgent-ribbon-sm {
+      background: #e84040; color: #fff; font-size: 10px; font-weight: 700;
+      padding: 3px 9px; border-radius: var(--radius-full); flex-shrink: 0;
+    }
+
+    /* Item Detail Sheet */
+    #itemDetailSheet .modal-sheet { max-height: 85dvh; }
+    .item-detail-hero {
+      height: 180px; display: flex; align-items: center; justify-content: center;
+      font-size: 60px; flex-shrink: 0; border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    }
+    .item-detail-body { padding: 20px 20px 0; flex: 1; overflow-y: auto; }
+    .item-detail-name { font-size: 20px; font-weight: 900; margin-bottom: 10px; }
+    .item-detail-desc { font-size: 14px; color: var(--text-mid); line-height: 1.6; margin-bottom: 16px; }
+    .item-detail-meta { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+    .item-detail-meta-item { font-size: 13px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
+    .item-detail-divider { height: 1px; background: var(--border); margin: 0 0 16px; }
+    .item-detail-poster {
+      display: flex; align-items: center; gap: 12px;
+      background: var(--bg-sub); border-radius: var(--radius-md); padding: 12px 14px;
+      margin-bottom: 16px;
+    }
+    .item-detail-avatar {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--green-pale); display: flex; align-items: center; justify-content: center;
+      font-size: 22px; border: 1.5px solid var(--border);
+    }
+    .item-detail-poster-info { flex: 1; }
+    .item-detail-poster-name { font-size: 15px; font-weight: 700; }
+    .item-detail-poster-label { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .item-detail-footer {
+      padding: 12px 20px calc(24px + var(--safe-bottom)); border-top: 1px solid var(--border); flex-shrink: 0;
+    }
+    .item-detail-take-btn {
+      width: 100%; padding: 15px; border-radius: var(--radius-full);
+      background: var(--green-main); color: #fff; font-size: 16px; font-weight: 700;
+      border: none; cursor: pointer; font-family: var(--font); transition: background .15s;
+    }
+    .item-detail-take-btn:hover { background: var(--green-deep); }
+
+    /* MY VIEW */
+    .my-view-wrap { padding-bottom: calc(80px + var(--safe-bottom)); }
+    .my-profile-card {
+      margin: 16px 20px; background: var(--green-pale);
+      border-radius: var(--radius-lg); padding: 20px;
+      display: flex; align-items: center; gap: 16px;
+    }
+    .my-avatar-big {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: var(--green-mid); display: flex; align-items: center; justify-content: center;
+      font-size: 32px; border: 3px solid #fff; box-shadow: var(--shadow-sm); flex-shrink: 0;
+    }
+    .my-profile-info { flex: 1; }
+    .my-profile-name { font-size: 20px; font-weight: 900; color: var(--text-dark); }
+    .my-profile-loc { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+    .my-trust-badge {
+      display: inline-block; background: var(--green-main); color: #fff;
+      border-radius: var(--radius-full); padding: 5px 14px; font-size: 13px; font-weight: 700;
+      margin-top: 8px;
+    }
+    .my-stats-grid {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      margin: 0 20px 20px; border: 1px solid var(--border); border-radius: var(--radius-md);
+      overflow: hidden; background: var(--bg-card);
+    }
+    .my-stat-item {
+      padding: 16px; text-align: center; border-right: 1px solid var(--border);
+    }
+    .my-stat-item:last-child { border-right: none; }
+    .my-stat-num { font-size: 20px; font-weight: 900; color: var(--green-deep); }
+    .my-stat-label { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+    .my-tabs { display: flex; margin: 0 20px 0; border-bottom: 2px solid var(--border); }
+    .my-tab {
+      flex: 1; padding: 12px; text-align: center; font-size: 14px; font-weight: 700;
+      color: var(--text-muted); cursor: pointer; border: none; background: none;
+      font-family: var(--font); border-bottom: 2px solid transparent; margin-bottom: -2px;
+      transition: color .15s;
+    }
+    .my-tab.active { color: var(--green-main); border-bottom-color: var(--green-main); }
+    .my-tab-content { display: none; padding: 12px 20px; }
+    .my-tab-content.active { display: block; }
+    .my-item-card {
+      display: flex; align-items: center; gap: 12px;
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md);
+      padding: 12px 14px; margin-bottom: 10px; box-shadow: var(--shadow-sm);
+    }
+    .my-item-emoji {
+      width: 48px; height: 48px; border-radius: var(--radius-sm);
+      background: var(--green-pale); display: flex; align-items: center; justify-content: center; font-size: 24px;
+    }
+    .my-item-info { flex: 1; }
+    .my-item-name { font-size: 14px; font-weight: 700; }
+    .my-item-date { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+    .my-status-chip {
+      padding: 4px 10px; border-radius: var(--radius-full); font-size: 11px; font-weight: 700;
+    }
+    .my-status-done    { background: var(--green-pale); color: var(--green-deep); }
+    .my-status-waiting { background: #fff3e0; color: #b06000; }
+    .my-settings-section { margin: 0 20px; }
+    .my-settings-divider { height: 1px; background: var(--border); margin: 8px 0; }
+    .my-settings-item {
+      display: flex; align-items: center; padding: 16px 0;
+      cursor: pointer; border-bottom: 1px solid var(--border); font-size: 15px; font-weight: 500;
+      color: var(--text-dark); border: none; background: none; width: 100%;
+      font-family: var(--font); text-align: left;
+    }
+    .my-settings-item:last-child { border-bottom: none; }
+    .my-settings-item:active { color: var(--green-main); }
+
+    /* Chat menu sheet */
+    .chat-menu-list { padding: 8px 0 calc(12px + var(--safe-bottom)); }
+    .chat-menu-item {
+      display: flex; align-items: center; gap: 14px;
+      padding: 17px 24px; cursor: pointer; font-size: 15px; font-weight: 600;
+      color: var(--text-dark); border-bottom: 1px solid var(--border);
+      transition: background .12s;
+    }
+    .chat-menu-item:last-child { border-bottom: none; }
+    .chat-menu-item:active { background: var(--bg-sub); }
+    .chat-menu-icon { font-size: 20px; }
+    .chat-menu-cancel {
+      margin: 0 20px; padding: 14px; border-radius: var(--radius-full);
+      background: var(--bg-sub); border: none; font-size: 15px; font-weight: 700;
+      color: var(--text-muted); cursor: pointer; font-family: var(--font); width: calc(100% - 40px);
+      margin-bottom: calc(16px + var(--safe-bottom));
+    }
+
+    /* Map zoom transition */
+    .map-canvas { transition: transform .3s ease; }
+
+    /* Relocate animation */
+    .my-loc-dot.relocate { animation: relocatePop .5s ease; }
+    @keyframes relocatePop { 0%{transform:scale(1)} 40%{transform:scale(1.8)} 100%{transform:scale(1)} }
   </style>
 </head>
 <body>
@@ -1281,14 +1528,14 @@
         <div class="logo-text">1<span>.5</span>인분</div>
       </div>
       <div class="header-actions">
-        <button class="icon-btn" onclick="showToast('알림을 준비 중이에요 🔔')">
+        <button class="icon-btn" onclick="openNotifPanel()">
           🔔<span class="notif-badge"></span>
         </button>
-        <button class="icon-btn" onclick="showToast('채팅방을 불러오는 중이에요 💬')">💬</button>
+        <button class="icon-btn" onclick="switchTab('chat', document.getElementById('nav-chat'))">💬</button>
       </div>
     </div>
     <div class="location-row">
-      <button class="location-btn" onclick="showToast('동네 설정은 마이페이지에서 변경할 수 있어요')">
+      <button class="location-btn" onclick="openLocationSheet()">
         <span class="loc-pin">📍</span>
         <span class="loc-name" id="appLocName">마포구 망원동</span>
         <span class="loc-arrow">▾</span>
@@ -1308,7 +1555,7 @@
       <div class="search-box">
         <span class="search-icon">🔍</span>
         <input type="text" placeholder="식재료 이름으로 검색해보세요" />
-        <button class="filter-btn" onclick="showToast('필터 기능은 준비 중이에요')">필터 ⚙️</button>
+        <button class="filter-btn" onclick="openFilterSheet()">필터 ⚙️</button>
       </div>
     </div>
 
@@ -1333,7 +1580,7 @@
     <!-- Urgent -->
     <div class="section-header" style="margin-top:18px;">
       <div class="section-title">⏰ 오늘 마감 임박</div>
-      <button class="see-all" onclick="showToast('전체보기')">전체보기</button>
+      <button class="see-all" onclick="openUrgentAll()">전체보기</button>
     </div>
     <div class="urgent-scroll">
       <div class="urgent-list">
@@ -1381,7 +1628,7 @@
 
     <!-- Feed -->
     <div class="feed" id="feed">
-      <div class="card" onclick="openPickup('애호박 1개')">
+      <div class="card" onclick="openItemDetail({name:'애호박 1개',emoji:'🥦',bg:'#e8f5e9',type:'fresh',typeName:'신선',dist:'52m',pickup:'현관 앞',time:'5분 전',desc:'마트에서 2개 묶음으로 샀는데 혼자 다 못 먹겠어요',poster:'지수님',avatar:'🙂'})">
         <div class="card-img"><div class="card-img-bg" style="background:#e8f5e9;">🥦</div><div class="trust-badge fresh">🥬 신선</div></div>
         <div class="card-body">
           <div class="card-top"><div class="card-title">애호박 1개</div><div class="card-free">무료</div></div>
@@ -1394,12 +1641,12 @@
           <div class="expiry-bar"><div class="expiry-fill soon" style="width:45%"></div></div>
           <div class="card-footer">
             <div class="poster-info"><div class="avatar">🙂</div><div class="poster-name">지수님</div></div>
-            <button class="pick-btn" onclick="event.stopPropagation();openPickup('애호박 1개')">가져갈게요</button>
+            <button class="pick-btn" onclick="event.stopPropagation();openItemDetail({name:'애호박 1개',emoji:'🥦',bg:'#e8f5e9',type:'fresh',typeName:'신선',dist:'52m',pickup:'현관 앞',time:'5분 전',desc:'마트에서 2개 묶음으로 샀는데 혼자 다 못 먹겠어요',poster:'지수님',avatar:'🙂'})">가져갈게요</button>
           </div>
         </div>
       </div>
 
-      <div class="card" onclick="openPickup('파스타면 200g')">
+      <div class="card" onclick="openItemDetail({name:'파스타면 200g',emoji:'🍝',bg:'#fff8e1',type:'unopened',typeName:'미개봉',dist:'80m',pickup:'1층 택배함',time:'23분 전',desc:'500g 사서 300g만 썼어요. 미개봉 소분이라 믿고 가져가세요',poster:'재현님',avatar:'😊'})">
         <div class="card-img"><div class="card-img-bg" style="background:#fff8e1;">🍝</div><div class="trust-badge unopened">🔒 미개봉</div></div>
         <div class="card-body">
           <div class="card-top"><div class="card-title">파스타면 200g</div><div class="card-free">무료</div></div>
@@ -1412,12 +1659,12 @@
           <div class="expiry-bar"><div class="expiry-fill ok" style="width:85%"></div></div>
           <div class="card-footer">
             <div class="poster-info"><div class="avatar">😊</div><div class="poster-name">재현님</div></div>
-            <button class="pick-btn" onclick="event.stopPropagation();openPickup('파스타면 200g')">가져갈게요</button>
+            <button class="pick-btn" onclick="event.stopPropagation();openItemDetail({name:'파스타면 200g',emoji:'🍝',bg:'#fff8e1',type:'unopened',typeName:'미개봉',dist:'80m',pickup:'1층 택배함',time:'23분 전',desc:'500g 사서 300g만 썼어요. 미개봉 소분이라 믿고 가져가세요',poster:'재현님',avatar:'😊'})">가져갈게요</button>
           </div>
         </div>
       </div>
 
-      <div class="card" onclick="openPickup('계란 4개')">
+      <div class="card" onclick="openItemDetail({name:'계란 4개',emoji:'🥚',bg:'#fffde7',type:'fresh',typeName:'신선',dist:'95m',pickup:'건물 입구',time:'1시간 전',desc:'30구 사서 남았어요. 유통기한 이틀 남았는데 혼자 못 먹겠어요',poster:'민정님',avatar:'😄'})">
         <div class="card-img"><div class="card-img-bg" style="background:#fffde7;">🥚</div><div class="trust-badge fresh">🥬 신선</div></div>
         <div class="card-body">
           <div class="card-top"><div class="card-title">계란 4개</div><div class="card-free">무료</div></div>
@@ -1430,12 +1677,12 @@
           <div class="expiry-bar"><div class="expiry-fill urgent" style="width:15%"></div></div>
           <div class="card-footer">
             <div class="poster-info"><div class="avatar">😄</div><div class="poster-name">민정님</div></div>
-            <button class="pick-btn" onclick="event.stopPropagation();openPickup('계란 4개')">가져갈게요</button>
+            <button class="pick-btn" onclick="event.stopPropagation();openItemDetail({name:'계란 4개',emoji:'🥚',bg:'#fffde7',type:'fresh',typeName:'신선',dist:'95m',pickup:'건물 입구',time:'1시간 전',desc:'30구 사서 남았어요. 유통기한 이틀 남았는데 혼자 못 먹겠어요',poster:'민정님',avatar:'😄'})">가져갈게요</button>
           </div>
         </div>
       </div>
 
-      <div class="card" onclick="openPickup('떡볶이 소스')">
+      <div class="card" onclick="openItemDetail({name:'떡볶이 소스 반팩',emoji:'🌶️',bg:'#fce4ec',type:'sealed',typeName:'밀봉',dist:'63m',pickup:'현관 앞',time:'2시간 전',desc:'밀키트 사서 소스가 너무 남았어요. 밀봉해서 냉장 보관 중',poster:'수현님',avatar:'😁'})">
         <div class="card-img"><div class="card-img-bg" style="background:#fce4ec;">🌶️</div><div class="trust-badge sealed">🥫 밀봉</div></div>
         <div class="card-body">
           <div class="card-top"><div class="card-title">떡볶이 소스 반팩</div><div class="card-free">무료</div></div>
@@ -1448,7 +1695,7 @@
           <div class="expiry-bar"><div class="expiry-fill soon" style="width:55%"></div></div>
           <div class="card-footer">
             <div class="poster-info"><div class="avatar">😁</div><div class="poster-name">수현님</div></div>
-            <button class="pick-btn" onclick="event.stopPropagation();openPickup('떡볶이 소스')">가져갈게요</button>
+            <button class="pick-btn" onclick="event.stopPropagation();openItemDetail({name:'떡볶이 소스 반팩',emoji:'🌶️',bg:'#fce4ec',type:'sealed',typeName:'밀봉',dist:'63m',pickup:'현관 앞',time:'2시간 전',desc:'밀키트 사서 소스가 너무 남았어요. 밀봉해서 냉장 보관 중',poster:'수현님',avatar:'😁'})">가져갈게요</button>
           </div>
         </div>
       </div>
@@ -1558,9 +1805,9 @@
         <button class="map-r-pill" onclick="setMapRadius(this,310,'10분')">10분</button>
       </div>
       <div class="map-controls">
-        <button class="map-ctrl-btn" onclick="showToast('현재 위치로 이동했어요')">🎯</button>
-        <button class="map-ctrl-btn" onclick="showToast('지도를 확대했어요')">＋</button>
-        <button class="map-ctrl-btn" onclick="showToast('지도를 축소했어요')">－</button>
+        <button class="map-ctrl-btn" onclick="mapRelocate()">🎯</button>
+        <button class="map-ctrl-btn" onclick="mapZoomIn()">＋</button>
+        <button class="map-ctrl-btn" onclick="mapZoomOut()">－</button>
       </div>
 
       <!-- Count badge -->
@@ -1579,7 +1826,7 @@
             <div class="map-sheet-meta" id="msMeta">신선 · 🚪 현관 앞<br>52m · 5분 전</div>
           </div>
         </div>
-        <button class="map-sheet-btn" id="msCta" onclick="showToast('픽업 요청을 보냈어요 ✅'); closeMapSheet()">가져갈게요</button>
+        <button class="map-sheet-btn" id="msCta" onclick="closeMapSheet(); switchTab('chat', document.getElementById('nav-chat'))">가져갈게요</button>
       </div>
 
     </div>
@@ -1644,6 +1891,90 @@
     <div class="feed-end"></div>
   </div><!-- /chatView -->
 
+  <!-- MY VIEW -->
+  <div id="myView">
+    <div class="my-view-wrap">
+      <!-- 프로필 헤더 카드 -->
+      <div class="my-profile-card">
+        <div class="my-avatar-big">😊</div>
+        <div class="my-profile-info">
+          <div class="my-profile-name">나</div>
+          <div class="my-profile-loc">📍 마포구 망원동</div>
+          <div class="my-trust-badge">🌿 나눔 이웃 Lv.2</div>
+        </div>
+      </div>
+
+      <!-- 통계 -->
+      <div class="my-stats-grid">
+        <div class="my-stat-item">
+          <div class="my-stat-num">3회</div>
+          <div class="my-stat-label">나눔한 것</div>
+        </div>
+        <div class="my-stat-item">
+          <div class="my-stat-num">2회</div>
+          <div class="my-stat-label">받은 것</div>
+        </div>
+        <div class="my-stat-item">
+          <div class="my-stat-num">450g</div>
+          <div class="my-stat-label">절약 탄소</div>
+        </div>
+      </div>
+
+      <!-- 탭 -->
+      <div class="my-tabs">
+        <button class="my-tab active" onclick="switchMyTab(this,'myGiven')">내가 나눔한 것</button>
+        <button class="my-tab" onclick="switchMyTab(this,'myReceived')">내가 받은 것</button>
+      </div>
+
+      <div class="my-tab-content active" id="myGiven">
+        <div class="my-item-card">
+          <div class="my-item-emoji">🥦</div>
+          <div class="my-item-info">
+            <div class="my-item-name">애호박 1개</div>
+            <div class="my-item-date">2025.05.20</div>
+          </div>
+          <span class="my-status-chip my-status-done">✅ 완료</span>
+        </div>
+        <div class="my-item-card">
+          <div class="my-item-emoji">🍝</div>
+          <div class="my-item-info">
+            <div class="my-item-name">파스타면 200g</div>
+            <div class="my-item-date">2025.05.21</div>
+          </div>
+          <span class="my-status-chip my-status-waiting">대기중</span>
+        </div>
+      </div>
+
+      <div class="my-tab-content" id="myReceived">
+        <div class="my-item-card">
+          <div class="my-item-emoji">🥚</div>
+          <div class="my-item-info">
+            <div class="my-item-name">계란 4개</div>
+            <div class="my-item-date">2025.05.19</div>
+          </div>
+          <span class="my-status-chip my-status-done">✅ 완료</span>
+        </div>
+        <div class="my-item-card">
+          <div class="my-item-emoji">🧅</div>
+          <div class="my-item-info">
+            <div class="my-item-name">양파 2개</div>
+            <div class="my-item-date">2025.05.18</div>
+          </div>
+          <span class="my-status-chip my-status-done">✅ 완료</span>
+        </div>
+      </div>
+
+      <!-- 설정 -->
+      <div class="my-settings-section" style="margin-top:20px;">
+        <div style="height:1px;background:var(--border);margin-bottom:4px;"></div>
+        <button class="my-settings-item" onclick="openLocationSheet()">📍 동네 설정</button>
+        <button class="my-settings-item" onclick="showToast('알림 설정')">🔔 알림 설정</button>
+        <button class="my-settings-item" onclick="showToast('개인정보 처리방침')">🛡️ 개인정보 처리방침</button>
+        <button class="my-settings-item" onclick="showToast('로그아웃 됐어요')">🚪 로그아웃</button>
+      </div>
+    </div>
+  </div><!-- /myView -->
+
   <!-- FAB -->
   <button class="fab" onclick="openShareModal()" title="나눔 올리기">＋</button>
 
@@ -1661,7 +1992,7 @@
     <button class="nav-item" id="nav-chat" onclick="switchTab('chat',this)">
       <span class="nav-icon">💬</span><span class="nav-label">채팅</span>
     </button>
-    <button class="nav-item" onclick="switchTab('my',this); showToast('마이페이지를 준비 중이에요')">
+    <button class="nav-item" id="nav-my" onclick="switchTab('my',this)">
       <span class="nav-icon">👤</span><span class="nav-label">나</span>
     </button>
   </nav>
@@ -1675,7 +2006,7 @@
         <div class="cr-header-name" id="crName">재현님</div>
         <div class="cr-header-status" id="crStatus">대화 중</div>
       </div>
-      <button class="cr-header-more" onclick="showToast('더보기 기능을 준비 중이에요')">⋯</button>
+      <button class="cr-header-more" onclick="openChatMenu()">⋯</button>
     </div>
 
     <!-- 나눔 요약 카드 -->
@@ -1890,6 +2221,210 @@
     </div>
   </div>
 
+  <!-- NOTIFICATION PANEL -->
+  <div id="notifOverlay" onclick="closeNotifPanel()"></div>
+  <div id="notifPanel">
+    <div class="notif-panel-header">
+      <div class="notif-panel-title">알림</div>
+      <button class="notif-close-btn" onclick="closeNotifPanel()">✕</button>
+    </div>
+    <div class="notif-list">
+      <div class="notif-item unread" onclick="closeNotifPanel()">
+        <div class="notif-emoji">🥚</div>
+        <div class="notif-content">
+          <div class="notif-text">민정님이 계란 픽업을 요청했어요</div>
+          <div class="notif-time">3분 전</div>
+        </div>
+        <div class="notif-unread-dot"></div>
+      </div>
+      <div class="notif-item unread" onclick="closeNotifPanel()">
+        <div class="notif-emoji">💬</div>
+        <div class="notif-content">
+          <div class="notif-text">재현님이 메시지를 보냈어요</div>
+          <div class="notif-time">15분 전</div>
+        </div>
+        <div class="notif-unread-dot"></div>
+      </div>
+      <div class="notif-item" onclick="closeNotifPanel()">
+        <div class="notif-emoji">🌿</div>
+        <div class="notif-content">
+          <div class="notif-text">내 반경 100m 내 새 나눔이 등록됐어요 (두부 1/2모)</div>
+          <div class="notif-time">1시간 전</div>
+        </div>
+      </div>
+      <div class="notif-item" onclick="closeNotifPanel()">
+        <div class="notif-emoji">✅</div>
+        <div class="notif-content">
+          <div class="notif-text">지수님이 애호박 픽업을 완료했어요</div>
+          <div class="notif-time">어제</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOCATION SHEET -->
+  <div class="modal-overlay" id="locationSheet" onclick="closeLocationSheet(event)">
+    <div class="modal-sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title-row">
+        <div class="sheet-title">동네 설정</div>
+        <button class="sheet-close-btn" onclick="closeLocationSheetDirect()">✕</button>
+      </div>
+      <div class="loc-sheet-body">
+        <button class="loc-gps-btn" onclick="setLocGps()">📍 현재 위치 GPS로 설정</button>
+        <input class="form-input" type="text" id="locSheetInput" placeholder="예) 마포구 망원동" style="margin-bottom:14px;" />
+        <div style="font-size:13px;font-weight:700;color:var(--text-muted);margin-bottom:8px;">자주 쓰는 동네</div>
+        <div class="loc-chips">
+          <button class="loc-chip" onclick="setLocChip('마포구 망원동')">마포구 망원동</button>
+          <button class="loc-chip" onclick="setLocChip('마포구 합정동')">마포구 합정동</button>
+          <button class="loc-chip" onclick="setLocChip('마포구 홍대입구')">마포구 홍대입구</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FILTER SHEET -->
+  <div class="modal-overlay" id="filterSheet" onclick="closeFilterSheet(event)">
+    <div class="modal-sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title-row">
+        <div class="sheet-title">필터</div>
+        <button class="sheet-close-btn" onclick="closeFilterSheetDirect()">✕</button>
+      </div>
+      <div class="filter-body" style="overflow-y:auto;flex:1;">
+        <div class="filter-section">
+          <div class="filter-section-title">신뢰 배지</div>
+          <div class="filter-chips">
+            <button class="filter-chip active" onclick="toggleFilterChip(this)">전체</button>
+            <button class="filter-chip" onclick="toggleFilterChip(this)">미개봉</button>
+            <button class="filter-chip" onclick="toggleFilterChip(this)">신선</button>
+            <button class="filter-chip" onclick="toggleFilterChip(this)">밀봉</button>
+          </div>
+        </div>
+        <div class="filter-section">
+          <div class="filter-section-title">픽업 방식</div>
+          <div class="filter-chips">
+            <button class="filter-chip active" onclick="toggleFilterChip(this)">전체</button>
+            <button class="filter-chip" onclick="toggleFilterChip(this)">비대면</button>
+            <button class="filter-chip" onclick="toggleFilterChip(this)">직접 전달</button>
+          </div>
+        </div>
+        <div class="filter-section">
+          <div class="filter-section-title">등록 시간</div>
+          <div class="filter-chips">
+            <button class="filter-chip active" onclick="toggleFilterChip(this)">전체</button>
+            <button class="filter-chip" onclick="toggleFilterChip(this)">1시간 내</button>
+            <button class="filter-chip" onclick="toggleFilterChip(this)">오늘</button>
+            <button class="filter-chip" onclick="toggleFilterChip(this)">이번 주</button>
+          </div>
+        </div>
+      </div>
+      <div class="filter-footer">
+        <button class="filter-reset-btn" onclick="resetFilter()">초기화</button>
+        <button class="filter-apply-btn" onclick="applyFilter()">적용하기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- URGENT ALL SHEET -->
+  <div class="modal-overlay" id="urgentAllSheet" onclick="closeUrgentAll(event)">
+    <div class="modal-sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title-row">
+        <div class="sheet-title">⏰ 오늘 마감 임박</div>
+        <button class="sheet-close-btn" onclick="closeUrgentAllDirect()">✕</button>
+      </div>
+      <div class="urgent-all-list" style="flex:1;overflow-y:auto;max-height:calc(85dvh - 80px);">
+        <div class="urgent-all-card" onclick="openPickup('오이 3개');closeUrgentAllDirect()">
+          <div class="urgent-all-emoji" style="background:#e8f5e9;">🥒</div>
+          <div class="urgent-all-info">
+            <div class="urgent-all-name">오이 3개</div>
+            <div class="urgent-all-meta">📍 51m · 🚪 건물 앞</div>
+          </div>
+          <span class="urgent-ribbon-sm">D-오늘</span>
+        </div>
+        <div class="urgent-all-card" onclick="openPickup('식빵 반쪽');closeUrgentAllDirect()">
+          <div class="urgent-all-emoji" style="background:#fff8e1;">🍞</div>
+          <div class="urgent-all-info">
+            <div class="urgent-all-name">식빵 반쪽</div>
+            <div class="urgent-all-meta">📍 38m · 🚪 현관 앞</div>
+          </div>
+          <span class="urgent-ribbon-sm">D-오늘</span>
+        </div>
+        <div class="urgent-all-card" onclick="openPickup('두부 1/2모');closeUrgentAllDirect()">
+          <div class="urgent-all-emoji" style="background:#f3e5f5;">🫙</div>
+          <div class="urgent-all-info">
+            <div class="urgent-all-name">두부 1/2모</div>
+            <div class="urgent-all-meta">📍 72m · 🚪 1층 택배함</div>
+          </div>
+          <span class="urgent-ribbon-sm">D-오늘</span>
+        </div>
+        <div class="urgent-all-card" onclick="openPickup('방울토마토');closeUrgentAllDirect()">
+          <div class="urgent-all-emoji" style="background:#fce4ec;">🍅</div>
+          <div class="urgent-all-info">
+            <div class="urgent-all-name">방울토마토</div>
+            <div class="urgent-all-meta">📍 88m · 🚪 건물 입구</div>
+          </div>
+          <span class="urgent-ribbon-sm">D-오늘</span>
+        </div>
+        <div class="urgent-all-card" onclick="openPickup('양배추 반통');closeUrgentAllDirect()">
+          <div class="urgent-all-emoji" style="background:#e8f5e9;">🥬</div>
+          <div class="urgent-all-info">
+            <div class="urgent-all-name">양배추 반통</div>
+            <div class="urgent-all-meta">📍 65m · 🚪 현관 앞</div>
+          </div>
+          <span class="urgent-ribbon-sm">D-오늘</span>
+        </div>
+        <div class="urgent-all-card" onclick="openPickup('사과 2개');closeUrgentAllDirect()">
+          <div class="urgent-all-emoji" style="background:#fce4ec;">🍎</div>
+          <div class="urgent-all-info">
+            <div class="urgent-all-name">사과 2개</div>
+            <div class="urgent-all-meta">📍 90m · 🚪 로비</div>
+          </div>
+          <span class="urgent-ribbon-sm">D-오늘</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ITEM DETAIL SHEET -->
+  <div class="modal-overlay" id="itemDetailSheet" onclick="closeItemDetail(event)">
+    <div class="modal-sheet" style="max-height:85dvh;">
+      <div class="item-detail-hero" id="itemDetailHero">🥦</div>
+      <div style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+        <div class="item-detail-body" id="itemDetailBody">
+          <div class="item-detail-name" id="itemDetailName">애호박 1개</div>
+          <div class="item-detail-desc" id="itemDetailDesc"></div>
+          <div class="item-detail-meta" id="itemDetailMeta"></div>
+          <div class="item-detail-divider"></div>
+          <div class="item-detail-poster" id="itemDetailPoster"></div>
+        </div>
+        <div class="item-detail-footer">
+          <button class="item-detail-take-btn" id="itemDetailBtn">가져갈게요 💚</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHAT MENU SHEET -->
+  <div class="modal-overlay" id="chatMenuSheet" onclick="closeChatMenuOutside(event)">
+    <div class="modal-sheet">
+      <div class="sheet-handle"></div>
+      <div class="chat-menu-list">
+        <div class="chat-menu-item" onclick="confirmPickup();closeChatMenu()">
+          <span class="chat-menu-icon">✅</span> 나눔 완료 처리
+        </div>
+        <div class="chat-menu-item" onclick="showToast('신고가 접수됐어요');closeChatMenu()">
+          <span class="chat-menu-icon">🚫</span> 이 나눔 신고하기
+        </div>
+        <div class="chat-menu-item" onclick="showToast('채팅방을 나갔어요');closeChatRoom();closeChatMenu()">
+          <span class="chat-menu-icon">🚪</span> 채팅방 나가기
+        </div>
+      </div>
+      <button class="chat-menu-cancel" onclick="closeChatMenu()">취소</button>
+    </div>
+  </div>
+
 </div><!-- /app -->
 
 <!-- Toast -->
@@ -1987,11 +2522,12 @@ function finishOnboarding() {
 function switchTab(tab, el) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   if (el) el.classList.add('active');
-  const views = ['homeView','mapView','chatView'];
+  const views = ['homeView','mapView','chatView','myView'];
   views.forEach(v => document.getElementById(v).classList.remove('active'));
   if      (tab === 'home') document.getElementById('homeView').classList.add('active');
   else if (tab === 'map' ) document.getElementById('mapView').classList.add('active');
   else if (tab === 'chat') document.getElementById('chatView').classList.add('active');
+  else if (tab === 'my'  ) document.getElementById('myView').classList.add('active');
   else                     document.getElementById('homeView').classList.add('active');
 }
 
@@ -2511,6 +3047,168 @@ function getNow() {
   const d = new Date();
   const h = d.getHours(), m = d.getMinutes();
   return `${h >= 12 ? '오후' : '오전'} ${h > 12 ? h-12 : h}:${String(m).padStart(2,'0')}`;
+}
+
+/* ════════════════════════════════
+   NOTIFICATION PANEL
+════════════════════════════════ */
+function openNotifPanel() {
+  document.getElementById('notifPanel').classList.add('open');
+  document.getElementById('notifOverlay').classList.add('open');
+}
+function closeNotifPanel() {
+  document.getElementById('notifPanel').classList.remove('open');
+  document.getElementById('notifOverlay').classList.remove('open');
+}
+
+/* ════════════════════════════════
+   LOCATION SHEET
+════════════════════════════════ */
+function openLocationSheet() {
+  document.getElementById('locationSheet').classList.add('open');
+}
+function closeLocationSheet(e) {
+  if (e.target.id === 'locationSheet') closeLocationSheetDirect();
+}
+function closeLocationSheetDirect() {
+  document.getElementById('locationSheet').classList.remove('open');
+}
+function setLocGps() {
+  document.getElementById('appLocName').textContent = '마포구 망원동';
+  closeLocationSheetDirect();
+  showToast('📍 마포구 망원동으로 설정됐어요');
+}
+function setLocChip(name) {
+  document.getElementById('appLocName').textContent = name;
+  closeLocationSheetDirect();
+  showToast(`📍 ${name}으로 설정됐어요`);
+}
+
+/* ════════════════════════════════
+   FILTER SHEET
+════════════════════════════════ */
+function openFilterSheet() {
+  document.getElementById('filterSheet').classList.add('open');
+}
+function closeFilterSheet(e) {
+  if (e.target.id === 'filterSheet') closeFilterSheetDirect();
+}
+function closeFilterSheetDirect() {
+  document.getElementById('filterSheet').classList.remove('open');
+}
+function toggleFilterChip(el) {
+  el.classList.toggle('active');
+}
+function resetFilter() {
+  document.querySelectorAll('#filterSheet .filter-chip').forEach((c,i) => {
+    c.classList.toggle('active', c.textContent.trim() === '전체');
+  });
+}
+function applyFilter() {
+  showToast('필터가 적용됐어요 ✅');
+  closeFilterSheetDirect();
+}
+
+/* ════════════════════════════════
+   URGENT ALL SHEET
+════════════════════════════════ */
+function openUrgentAll() {
+  document.getElementById('urgentAllSheet').classList.add('open');
+}
+function closeUrgentAll(e) {
+  if (e.target.id === 'urgentAllSheet') closeUrgentAllDirect();
+}
+function closeUrgentAllDirect() {
+  document.getElementById('urgentAllSheet').classList.remove('open');
+}
+
+/* ════════════════════════════════
+   ITEM DETAIL SHEET
+════════════════════════════════ */
+function openItemDetail(item) {
+  const hero = document.getElementById('itemDetailHero');
+  hero.textContent = item.emoji;
+  hero.style.background = item.bg;
+
+  const badgeClass = item.type;
+  const badgeIcons = { unopened:'🔒', fresh:'🥬', sealed:'🥫' };
+  document.getElementById('itemDetailName').innerHTML =
+    `<span class="trust-badge ${badgeClass}" style="position:static;display:inline-flex;margin-bottom:6px;">${badgeIcons[item.type]} ${item.typeName}</span><br>${item.name}`;
+
+  document.getElementById('itemDetailDesc').textContent = item.desc;
+
+  document.getElementById('itemDetailMeta').innerHTML =
+    `<div class="item-detail-meta-item">📍 ${item.dist}</div>` +
+    `<div class="item-detail-meta-item">🚪 ${item.pickup}</div>` +
+    `<div class="item-detail-meta-item">🕐 ${item.time}</div>`;
+
+  document.getElementById('itemDetailPoster').innerHTML =
+    `<div class="item-detail-avatar">${item.avatar}</div>` +
+    `<div class="item-detail-poster-info">` +
+    `<div class="item-detail-poster-name">${item.poster}</div>` +
+    `<div class="item-detail-poster-label">나눔 이웃</div></div>`;
+
+  const btn = document.getElementById('itemDetailBtn');
+  btn.onclick = () => {
+    showToast(`"${item.name}" 픽업 요청을 보냈어요 ✅`);
+    closeItemDetailDirect();
+  };
+
+  document.getElementById('itemDetailSheet').classList.add('open');
+}
+function closeItemDetail(e) {
+  if (e.target.id === 'itemDetailSheet') closeItemDetailDirect();
+}
+function closeItemDetailDirect() {
+  document.getElementById('itemDetailSheet').classList.remove('open');
+}
+
+/* ════════════════════════════════
+   CHAT MENU SHEET
+════════════════════════════════ */
+function openChatMenu() {
+  document.getElementById('chatMenuSheet').classList.add('open');
+}
+function closeChatMenu() {
+  document.getElementById('chatMenuSheet').classList.remove('open');
+}
+function closeChatMenuOutside(e) {
+  if (e.target.id === 'chatMenuSheet') closeChatMenu();
+}
+
+/* ════════════════════════════════
+   MY PAGE TAB
+════════════════════════════════ */
+function switchMyTab(el, tabId) {
+  document.querySelectorAll('.my-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.my-tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+}
+
+/* ════════════════════════════════
+   MAP ZOOM & RELOCATE
+════════════════════════════════ */
+let mapZoom = 1.0;
+function mapZoomIn() {
+  mapZoom = Math.min(mapZoom + 0.15, 1.6);
+  document.querySelector('.map-canvas').style.transform = `scale(${mapZoom})`;
+  showToast('지도를 확대했어요');
+}
+function mapZoomOut() {
+  mapZoom = Math.max(mapZoom - 0.15, 0.7);
+  document.querySelector('.map-canvas').style.transform = `scale(${mapZoom})`;
+  showToast('지도를 축소했어요');
+}
+function mapRelocate() {
+  mapZoom = 1.0;
+  document.querySelector('.map-canvas').style.transform = `scale(1)`;
+  const dot = document.querySelector('.my-loc-dot');
+  dot.classList.remove('relocate');
+  void dot.offsetWidth; // reflow to restart animation
+  dot.classList.add('relocate');
+  setTimeout(() => dot.classList.remove('relocate'), 500);
+  showToast('현재 위치로 이동했어요');
 }
 
 let toastTimer;
