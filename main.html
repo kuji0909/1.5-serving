@@ -852,6 +852,45 @@
     }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+    /* ── 알림 설정 시트 ── */
+    .notif-setting-section { padding: 18px 0 4px; }
+    .notif-setting-section-title {
+      font-size: 11px; font-weight: 700; color: var(--text-muted);
+      letter-spacing: .5px; text-transform: uppercase; margin-bottom: 4px;
+    }
+    .notif-setting-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 0; border-bottom: 1px solid var(--border);
+    }
+    .notif-setting-row:last-child { border-bottom: none; }
+    .notif-row-left { display: flex; flex-direction: column; gap: 3px; }
+    .notif-row-label { font-size: 15px; font-weight: 600; color: var(--text-dark); }
+    .notif-row-desc  { font-size: 12px; color: var(--text-muted); }
+    /* 토글 스위치 */
+    .toggle-wrap { position: relative; width: 48px; height: 28px; flex-shrink: 0; }
+    .toggle-wrap input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .toggle-track {
+      position: absolute; inset: 0; border-radius: 14px;
+      background: var(--border); cursor: pointer;
+      transition: background .25s;
+    }
+    .toggle-track::after {
+      content: ''; position: absolute;
+      top: 3px; left: 3px;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.2);
+      transition: transform .25s;
+    }
+    .toggle-wrap input:checked + .toggle-track { background: var(--green-main); }
+    .toggle-wrap input:checked + .toggle-track::after { transform: translateX(20px); }
+    /* 마스터 토글 행 */
+    .notif-master-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 0; border-bottom: 2px solid var(--border); margin-bottom: 4px;
+    }
+    .notif-master-label { font-size: 16px; font-weight: 800; color: var(--text-dark); }
+    .notif-master-desc  { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
     @keyframes fadeInCard {
       from { opacity:0; transform:translateY(-12px); }
       to   { opacity:1; transform:translateY(0); }
@@ -2041,7 +2080,7 @@
         <div style="height:1px;background:var(--border);margin-bottom:4px;"></div>
         <button class="my-settings-item" onclick="openLocationSheet()">📍 동네 설정</button>
         <button class="my-settings-item" onclick="openPickupPrefSheet()">🤝 픽업 방식 설정 <span>›</span></button>
-        <button class="my-settings-item" onclick="showToast('알림 설정')">🔔 알림 설정</button>
+        <button class="my-settings-item" onclick="openNotifSettingSheet()">🔔 알림 설정 <span>›</span></button>
         <button class="my-settings-item" onclick="showToast('개인정보 처리방침')">🛡️ 개인정보 처리방침</button>
         <button class="my-settings-item" onclick="showToast('로그아웃 됐어요')">🚪 로그아웃</button>
       </div>
@@ -2389,6 +2428,97 @@
           </label>
         </div>
         <button class="ob-cta" style="width:100%;" onclick="savePickupPref()">저장하기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTIF SETTING SHEET -->
+  <div class="modal-overlay" id="notifSettingSheet" onclick="closeNotifSettingSheet(event)">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <div class="modal-handle"></div>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;">
+          <div class="modal-title">알림 설정 🔔</div>
+          <button class="sheet-close-btn" onclick="document.getElementById('notifSettingSheet').classList.remove('open')">✕</button>
+        </div>
+      </div>
+      <div class="modal-body" style="padding-bottom:24px;">
+
+        <!-- 마스터 토글 -->
+        <div class="notif-master-row">
+          <div>
+            <div class="notif-master-label">알림 전체 허용</div>
+            <div class="notif-master-desc">끄면 모든 알림이 중단돼요</div>
+          </div>
+          <label class="toggle-wrap">
+            <input type="checkbox" id="toggleMaster" checked onchange="onMasterToggle(this)" />
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+
+        <!-- 나눔 알림 -->
+        <div class="notif-setting-section" id="notifRows">
+          <div class="notif-setting-section-title">나눔 알림</div>
+
+          <div class="notif-setting-row">
+            <div class="notif-row-left">
+              <span class="notif-row-label">🥬 새 나눔 등록</span>
+              <span class="notif-row-desc">내 반경 내 새 나눔이 올라오면 알려줘요</span>
+            </div>
+            <label class="toggle-wrap">
+              <input type="checkbox" class="sub-toggle" checked onchange="saveNotifSetting()" />
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+
+          <div class="notif-setting-row">
+            <div class="notif-row-left">
+              <span class="notif-row-label">⏰ 마감 임박</span>
+              <span class="notif-row-desc">오늘 마감되는 나눔을 먼저 알려줘요</span>
+            </div>
+            <label class="toggle-wrap">
+              <input type="checkbox" class="sub-toggle" checked onchange="saveNotifSetting()" />
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+
+          <div class="notif-setting-row">
+            <div class="notif-row-left">
+              <span class="notif-row-label">💬 채팅 메시지</span>
+              <span class="notif-row-desc">새 채팅이 오면 알려줘요</span>
+            </div>
+            <label class="toggle-wrap">
+              <input type="checkbox" class="sub-toggle" checked onchange="saveNotifSetting()" />
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+
+          <div class="notif-setting-row">
+            <div class="notif-row-left">
+              <span class="notif-row-label">✅ 픽업 완료</span>
+              <span class="notif-row-desc">내 나눔이 픽업 완료되면 알려줘요</span>
+            </div>
+            <label class="toggle-wrap">
+              <input type="checkbox" class="sub-toggle" checked onchange="saveNotifSetting()" />
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+
+          <!-- 마케팅 알림 -->
+          <div class="notif-setting-section-title" style="margin-top:20px;">마케팅 알림</div>
+
+          <div class="notif-setting-row">
+            <div class="notif-row-left">
+              <span class="notif-row-label">📣 이벤트·공지</span>
+              <span class="notif-row-desc">혜택 및 서비스 소식을 알려줘요</span>
+            </div>
+            <label class="toggle-wrap">
+              <input type="checkbox" class="sub-toggle" onchange="saveNotifSetting()" />
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -3238,6 +3368,32 @@ function setLocChip(name) {
 /* ════════════════════════════════
    PICKUP PREF SHEET
 ════════════════════════════════ */
+/* ════════════════════════════════
+   알림 설정 시트
+════════════════════════════════ */
+function openNotifSettingSheet() {
+  document.getElementById('notifSettingSheet').classList.add('open');
+}
+function closeNotifSettingSheet(e) {
+  if (e.target.id === 'notifSettingSheet') {
+    document.getElementById('notifSettingSheet').classList.remove('open');
+  }
+}
+function onMasterToggle(el) {
+  const rows = document.getElementById('notifRows');
+  const subToggles = rows.querySelectorAll('.sub-toggle');
+  const isOn = el.checked;
+  // 서브 토글 전체 활성/비활성
+  subToggles.forEach(t => {
+    t.disabled = !isOn;
+    t.parentElement.style.opacity = isOn ? '1' : '0.4';
+  });
+  showToast(isOn ? '알림이 켜졌어요 🔔' : '알림이 꺼졌어요');
+}
+function saveNotifSetting() {
+  showToast('알림 설정이 저장됐어요 ✅');
+}
+
 function openPickupPrefSheet() {
   document.getElementById('pickupPrefSheet').classList.add('open');
 }
