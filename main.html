@@ -1512,6 +1512,73 @@
     </div>
   </div>
 
+  <!-- 6. 픽업 방식 선호 (F-06) -->
+  <div class="ob-screen" id="ob-pickup">
+    <div class="ob-top-bar">
+      <button class="ob-back" onclick="prevOb(4)">←</button>
+      <div class="ob-progress"><div class="ob-progress-fill" style="width:66%"></div></div>
+    </div>
+    <div class="ob-body">
+      <div class="ob-step-label">STEP 4 / 5</div>
+      <div class="ob-title">픽업은 어떻게<br>하고 싶으세요?</div>
+      <div class="ob-desc">선호 방식에 맞는 나눔을<br>우선적으로 보여드려요.</div>
+      <div class="radius-options" style="margin-bottom:0;">
+        <div class="radius-opt selected" id="pk-go" onclick="selectObPickup(this,'go')">
+          <div class="ro-icon">🚶</div>
+          <div class="ro-info">
+            <div class="ro-name">내가 나가서 픽업할게요</div>
+            <div class="ro-desc">가까운 거리면 직접 가져와요</div>
+          </div>
+        </div>
+        <div class="radius-opt" id="pk-come" onclick="selectObPickup(this,'come')">
+          <div class="ro-icon">🏠</div>
+          <div class="ro-info">
+            <div class="ro-name">상대방이 와줬으면 해요</div>
+            <div class="ro-desc">문 앞에 두면 상대가 가져가요</div>
+          </div>
+        </div>
+        <div class="radius-opt" id="pk-any" onclick="selectObPickup(this,'any')">
+          <div class="ro-icon">🤝</div>
+          <div class="ro-info">
+            <div class="ro-name">상관없어요</div>
+            <div class="ro-desc">상황에 따라 유연하게</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ob-cta-wrap">
+      <button class="ob-cta" onclick="nextOb(6)">다음 →</button>
+    </div>
+  </div>
+
+  <!-- 7. 푸시 알림 동의 (F-07) -->
+  <div class="ob-screen" id="ob-push">
+    <div class="ob-top-bar">
+      <button class="ob-back" onclick="prevOb(5)">←</button>
+      <div class="ob-progress"><div class="ob-progress-fill" style="width:100%"></div></div>
+    </div>
+    <div class="ob-body" style="align-items:center; text-align:center; justify-content:center;">
+      <div class="ob-step-label">STEP 5 / 5</div>
+      <div style="font-size:64px; margin: 16px 0;">🔔</div>
+      <div class="ob-title" style="text-align:center;">새 나눔 알림을<br>받을까요?</div>
+      <div class="ob-desc" style="text-align:center; margin-bottom:0;">내 반경 안에 새 나눔이 등록되면<br>바로 알려드려요. 놓치지 마세요!</div>
+      <div style="margin-top:28px; width:100%; background:var(--bg-sub); border-radius:var(--radius-md); padding:16px 18px; border:1px solid var(--border);">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+          <span style="font-size:18px;">🥬</span>
+          <span style="font-size:13px; color:var(--text-mid);">망원동에 새 나눔이 등록됐어요 (애호박 1개)</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="font-size:18px;">⏰</span>
+          <span style="font-size:13px; color:var(--text-mid);">내 반경 100m에 마감 임박 나눔이 있어요!</span>
+        </div>
+      </div>
+    </div>
+    <div class="ob-cta-wrap" style="display:flex; flex-direction:column; gap:10px;">
+      <button class="ob-cta" onclick="finishOnboarding()">알림 받을게요 🔔</button>
+      <button style="background:none; border:none; font-family:var(--font); font-size:13px; color:var(--text-muted); cursor:pointer; padding:8px; text-decoration:underline;" onclick="finishOnboarding()">나중에 설정할게요</button>
+    </div>
+  </div>
+
 </div><!-- /onboarding -->
 
 
@@ -1637,6 +1704,7 @@
             <div class="meta-item">📍 52m</div>
             <div class="meta-item">🚪 현관 앞</div>
             <div class="meta-item">🕐 5분 전</div>
+            <div class="meta-item" style="color:var(--green-main);font-weight:600;">👐 비대면</div>
           </div>
           <div class="expiry-bar"><div class="expiry-fill soon" style="width:45%"></div></div>
           <div class="card-footer">
@@ -1655,6 +1723,7 @@
             <div class="meta-item">📍 80m</div>
             <div class="meta-item">🚪 1층 택배함</div>
             <div class="meta-item">🕐 23분 전</div>
+            <div class="meta-item" style="color:var(--green-main);font-weight:600;">👐 비대면</div>
           </div>
           <div class="expiry-bar"><div class="expiry-fill ok" style="width:85%"></div></div>
           <div class="card-footer">
@@ -1673,6 +1742,7 @@
             <div class="meta-item">📍 95m</div>
             <div class="meta-item">🚪 건물 입구</div>
             <div class="meta-item">🕐 1시간 전</div>
+            <div class="meta-item" style="color:#b06000;font-weight:600;">🤝 직접전달</div>
           </div>
           <div class="expiry-bar"><div class="expiry-fill urgent" style="width:15%"></div></div>
           <div class="card-footer">
@@ -1691,6 +1761,7 @@
             <div class="meta-item">📍 63m</div>
             <div class="meta-item">🚪 현관 앞</div>
             <div class="meta-item">🕐 2시간 전</div>
+            <div class="meta-item" style="color:var(--green-main);font-weight:600;">👐 비대면</div>
           </div>
           <div class="expiry-bar"><div class="expiry-fill soon" style="width:55%"></div></div>
           <div class="card-footer">
@@ -1709,6 +1780,7 @@
             <div class="meta-item">📍 77m</div>
             <div class="meta-item">🚪 로비</div>
             <div class="meta-item">🕐 3시간 전</div>
+            <div class="meta-item" style="color:var(--green-main);font-weight:600;">👐 비대면</div>
           </div>
           <div class="expiry-bar"><div class="expiry-fill ok" style="width:75%"></div></div>
           <div class="card-footer">
@@ -1968,6 +2040,7 @@
       <div class="my-settings-section" style="margin-top:20px;">
         <div style="height:1px;background:var(--border);margin-bottom:4px;"></div>
         <button class="my-settings-item" onclick="openLocationSheet()">📍 동네 설정</button>
+        <button class="my-settings-item" onclick="openPickupPrefSheet()">🤝 픽업 방식 설정 <span>›</span></button>
         <button class="my-settings-item" onclick="showToast('알림 설정')">🔔 알림 설정</button>
         <button class="my-settings-item" onclick="showToast('개인정보 처리방침')">🛡️ 개인정보 처리방침</button>
         <button class="my-settings-item" onclick="showToast('로그아웃 됐어요')">🚪 로그아웃</button>
@@ -2283,6 +2356,43 @@
     </div>
   </div>
 
+  <!-- PICKUP PREF SHEET -->
+  <div class="modal-overlay" id="pickupPrefSheet" onclick="closePickupPrefSheet(event)">
+    <div class="modal-sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title-row">
+        <div class="sheet-title">픽업 방식 설정</div>
+        <button class="sheet-close-btn" onclick="document.getElementById('pickupPrefSheet').classList.remove('open')">✕</button>
+      </div>
+      <div class="loc-sheet-body">
+        <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:20px;">
+          <label style="display:flex; align-items:center; gap:14px; padding:14px 16px; border:1px solid var(--border); border-radius:var(--radius-md); cursor:pointer; background:var(--bg-sub);">
+            <input type="radio" name="pickupPref" value="go" checked style="accent-color:var(--green-main); width:18px; height:18px;" />
+            <div>
+              <div style="font-size:15px; font-weight:700;">🚶 내가 나가서 픽업할게요</div>
+              <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">가까운 거리면 직접 가져와요</div>
+            </div>
+          </label>
+          <label style="display:flex; align-items:center; gap:14px; padding:14px 16px; border:1px solid var(--border); border-radius:var(--radius-md); cursor:pointer; background:var(--bg-sub);">
+            <input type="radio" name="pickupPref" value="come" style="accent-color:var(--green-main); width:18px; height:18px;" />
+            <div>
+              <div style="font-size:15px; font-weight:700;">🏠 상대방이 와줘야 해요</div>
+              <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">문 앞에 두면 상대가 가져가요</div>
+            </div>
+          </label>
+          <label style="display:flex; align-items:center; gap:14px; padding:14px 16px; border:1px solid var(--border); border-radius:var(--radius-md); cursor:pointer; background:var(--bg-sub);">
+            <input type="radio" name="pickupPref" value="any" style="accent-color:var(--green-main); width:18px; height:18px;" />
+            <div>
+              <div style="font-size:15px; font-weight:700;">🤝 상관없음</div>
+              <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">상황에 따라 유연하게</div>
+            </div>
+          </label>
+        </div>
+        <button class="ob-cta" style="width:100%;" onclick="savePickupPref()">저장하기</button>
+      </div>
+    </div>
+  </div>
+
   <!-- FILTER SHEET -->
   <div class="modal-overlay" id="filterSheet" onclick="closeFilterSheet(event)">
     <div class="modal-sheet">
@@ -2432,6 +2542,12 @@
 
 
 <script>
+// 재방문 시 온보딩 스킵
+if (localStorage.getItem('ob_done') === '1') {
+  document.getElementById('onboarding').style.display = 'none';
+  document.getElementById('app').classList.add('visible');
+}
+
 /* ════════════════════════════════
    ONBOARDING
 ════════════════════════════════ */
@@ -2447,7 +2563,7 @@ function nextOb(to) {
   const cur = document.querySelector('.ob-screen.active');
   if (cur) { cur.classList.add('exit'); setTimeout(() => cur.classList.remove('active','exit'), 350); }
   obStep = to;
-  const screens = ['ob-splash','ob-login','ob-location','ob-radius','ob-trust'];
+  const screens = ['ob-splash','ob-login','ob-location','ob-radius','ob-trust','ob-pickup','ob-push'];
   if (to >= screens.length) { finishOnboarding(); return; }
   setTimeout(() => {
     const next = document.getElementById(screens[to]);
@@ -2491,13 +2607,21 @@ function advanceTrust() {
     trustIdx++;
     document.getElementById('trustSlides').style.transform = `translateX(-${trustIdx * 100}%)`;
     document.querySelectorAll('#carouselDots span').forEach((d,i) => d.classList.toggle('active', i === trustIdx));
-    if (trustIdx === 2) document.getElementById('trustCta').textContent = '시작하기 🌿';
+    if (trustIdx === 2) document.getElementById('trustCta').textContent = '다음 →';
   } else {
-    finishOnboarding();
+    nextOb(5);
   }
 }
 
+let obPickupPref = 'go';
+function selectObPickup(el, val) {
+  document.querySelectorAll('#ob-pickup .radius-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  obPickupPref = val;
+}
+
 function finishOnboarding() {
+  localStorage.setItem('ob_done', '1');
   // Apply chosen location/radius to app header
   const manual = document.getElementById('manualLoc').value.trim();
   if (manual) document.getElementById('appLocName').textContent = manual;
@@ -2557,6 +2681,33 @@ function filterCat(el, cat) {
 function selectSort(el) {
   document.querySelectorAll('.sort-chip').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
+  const sortType = el.textContent.trim();
+  const feed = document.getElementById('feed');
+  const cards = Array.from(feed.querySelectorAll('.card'));
+  // 각 카드의 거리 메타 파싱
+  const getVal = card => {
+    const meta = card.querySelector('.card-meta');
+    if (!meta) return 9999;
+    const txt = meta.textContent;
+    if (sortType === '거리순') {
+      const m = txt.match(/(\d+)m/);
+      return m ? parseInt(m[1]) : 9999;
+    }
+    if (sortType === '최신순') {
+      if (txt.includes('분 전')) return parseInt(txt.match(/(\d+)분/)?.[1] || 999);
+      if (txt.includes('시간 전')) return parseInt(txt.match(/(\d+)시간/)?.[1] || 99) * 60;
+      return 9999;
+    }
+    if (sortType === '마감임박') {
+      const bar = card.querySelector('.expiry-fill');
+      if (!bar) return 100;
+      const w = parseInt(bar.style.width) || 100;
+      return w; // 낮을수록 임박
+    }
+    return 0;
+  };
+  cards.sort((a, b) => getVal(a) - getVal(b));
+  cards.forEach(c => feed.appendChild(c));
 }
 
 /* ════════════════════════════════
@@ -3082,6 +3233,20 @@ function setLocChip(name) {
   document.getElementById('appLocName').textContent = name;
   closeLocationSheetDirect();
   showToast(`📍 ${name}으로 설정됐어요`);
+}
+
+/* ════════════════════════════════
+   PICKUP PREF SHEET
+════════════════════════════════ */
+function openPickupPrefSheet() {
+  document.getElementById('pickupPrefSheet').classList.add('open');
+}
+function closePickupPrefSheet(e) {
+  if (e.target.id === 'pickupPrefSheet') document.getElementById('pickupPrefSheet').classList.remove('open');
+}
+function savePickupPref() {
+  document.getElementById('pickupPrefSheet').classList.remove('open');
+  showToast('픽업 방식이 저장됐어요 ✅');
 }
 
 /* ════════════════════════════════
